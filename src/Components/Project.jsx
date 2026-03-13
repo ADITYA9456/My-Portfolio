@@ -368,7 +368,7 @@ const Second = () => {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-4 relative">
-            {/* Project 1 - Chai-Express */}
+            {/* Project 1 - EduOrbit */}
             <motion.div
               className="relative group"
               variants={projectVariants}
@@ -377,62 +377,39 @@ const Second = () => {
             >
               {/* Timeline Node */}
               <motion.div 
-                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-full border-4 border-slate-900 z-20"
+                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full border-4 border-slate-900 z-20"
                 whileHover={{ scale: 1.5 }}
                 transition={{ duration: 0.3 }}
               />
-
-              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 ml-8 lg:ml-0">
+              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 ml-8 lg:ml-0">
                 <motion.div className="relative mb-6 overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-500">
-                  <motion.a href="https://github.com/jainaditya2309/chai-Express.git" target="_blank" rel="noopener noreferrer">
-                    <motion.img 
-                      width={280} 
-                      height={160} 
-                      src="gif/chai.gif" 
-                      alt="Chai-Express"
-                      className="w-full h-40 object-cover rounded-xl"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.a>
-                  
-                  {/* Hover Overlay */}
-                  <motion.div 
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"
-                  >
-                    <motion.a
-                      href="https://github.com/jainaditya2309/chai-Express.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-gradient-to-r from-slate-800 to-black border-2 border-slate-600 text-white rounded-xl font-medium hover:border-orange-500/50 transition-all flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FaGithub className="text-lg" />
-                      <span>View Code</span>
-                    </motion.a>
-                  </motion.div>
+                  <motion.img 
+                    width={280} 
+                    height={160} 
+                    src="gif/edoorbit.gif" 
+                    alt="EduOrbit"
+                    className="w-full h-40 object-cover rounded-xl"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                  />
                 </motion.div>
-
                 <div className="space-y-4">
                   <motion.h3 
-                    className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent"
+                    className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
                     whileHover={{ scale: 1.02 }}
                   >
-                    Chai-Express
+                    EduOrbit
                   </motion.h3>
-                  
                   <motion.p 
                     className="text-gray-300 text-sm leading-relaxed"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    A modern web platform that enables creators to receive financial support from their audience through small contributions. Features GitHub OAuth, dashboards, and Razorpay integration.
+                    AI-powered Modern EdTech Platform. Full-stack platform for coding contests, video learning, leaderboards, and user profiles. Responsive UI with Tailwind CSS, secure authentication via NextAuth.js, and Supabase for data persistence.
                   </motion.p>
-
                   <div className="flex flex-wrap gap-2">
-                    {["React", "Node.js", "MongoDB", "OAuth"].map((tech, index) => (
+                    {["Next.js", "Tailwind CSS", "Node.js", "Supabase", "NextAuth.js"].map((tech, index) => (
                       <motion.span
                         key={tech}
                         className="px-3 py-1 bg-slate-800/80 border border-slate-600 text-slate-300 rounded-lg text-xs font-medium"
@@ -448,7 +425,7 @@ const Second = () => {
               </motion.div>
             </motion.div>
 
-            {/* Project 2 - MultiMantra */}
+            {/* Project 2 - BuildupX */}
             <motion.div
               className="relative group"
               variants={projectVariants}
@@ -457,62 +434,39 @@ const Second = () => {
             >
               {/* Timeline Node */}
               <motion.div 
-                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full border-4 border-slate-900 z-20"
+                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-full border-4 border-slate-900 z-20"
                 whileHover={{ scale: 1.5 }}
                 transition={{ duration: 0.3 }}
               />
-
-              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 ml-8 lg:ml-0">
+              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/20 transition-all duration-500 ml-8 lg:ml-0">
                 <motion.div className="relative mb-6 overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-500">
-                  <motion.a href="https://github.com/jainaditya2309/MultiMantra.git" target="_blank" rel="noopener noreferrer">
-                    <motion.img 
-                      width={280} 
-                      height={160} 
-                      src="gif/multimantra.gif" 
-                      alt="MultiMantra"
-                      className="w-full h-40 object-cover rounded-xl"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.a>
-                  
-                  {/* Hover Overlay */}
-                  <motion.div 
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"
-                  >
-                    <motion.a
-                      href="https://github.com/jainaditya2309/MultiMantra.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-gradient-to-r from-slate-800 to-black border-2 border-slate-600 text-white rounded-xl font-medium hover:border-blue-500/50 transition-all flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FaGithub className="text-lg" />
-                      <span>View Code</span>
-                    </motion.a>
-                  </motion.div>
+                  <motion.img 
+                    width={280} 
+                    height={160} 
+                    src="gif/build.gif" 
+                    alt="BuildupX"
+                    className="w-full h-40 object-cover rounded-xl"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                  />
                 </motion.div>
-
                 <div className="space-y-4">
                   <motion.h3 
-                    className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent"
+                    className="text-2xl font-bold bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent"
                     whileHover={{ scale: 1.02 }}
                   >
-                    MultiMantra
+                    BuildupX
                   </motion.h3>
-                  
                   <motion.p 
                     className="text-gray-300 text-sm leading-relaxed"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    MultiMantra is an advanced digital platform offering blog creation, secure online donations, a customizable linktree-style hub, powerful URL shortening, and an intelligent rule-based chatbot. Built with Next.js, MongoDB, Tailwind CSS, and Razorpay, it delivers a seamless, interactive user experience.
+                    AI-powered Fitness & Nutrition Tracking Web App. 15+ RESTful APIs for nutrition analytics, meal logging, food search, and integrated responsive UI with PWA capabilities. User authentication, real-time calorie tracking, AI-powered diet plan generation, and secure payment integration.
                   </motion.p>
-
                   <div className="flex flex-wrap gap-2">
-                    {["Next.js", "Node", "Express", "Tailwind", "MongoDB", "Razorpay", "Auth", "Chatbot (Rule-based)"].map((tech, index) => (
+                    {["Next.js", "MongoDB", "Tailwind CSS", "NextAuth.js", "Razorpay"].map((tech, index) => (
                       <motion.span
                         key={tech}
                         className="px-3 py-1 bg-slate-800/80 border border-slate-600 text-slate-300 rounded-lg text-xs font-medium"
@@ -528,7 +482,7 @@ const Second = () => {
               </motion.div>
             </motion.div>
 
-            {/* Project 3 - BuildupX */}
+            {/* Project 3 - OptiFlow */}
             <motion.div
               className="relative group"
               variants={projectVariants}
@@ -537,142 +491,39 @@ const Second = () => {
             >
               {/* Timeline Node */}
               <motion.div 
-                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-green-500 to-teal-500 rounded-full border-4 border-slate-900 z-20"
+                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full border-4 border-slate-900 z-20"
                 whileHover={{ scale: 1.5 }}
                 transition={{ duration: 0.3 }}
               />
-
-              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-green-500/20 transition-all duration-500 ml-8 lg:ml-0">
+              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-pink-500/20 transition-all duration-500 ml-8 lg:ml-0">
                 <motion.div className="relative mb-6 overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-500">
-                  <motion.a href="https://github.com/jainaditya2309/BuildupX.git" target="_blank" rel="noopener noreferrer">
-                    <motion.img 
-                      width={280} 
-                      height={160} 
-                      src="gif/build.gif" 
-                      alt="BuildupX"
-                      className="w-full h-40 object-cover rounded-xl"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.a>
-                  
-                  {/* Hover Overlay */}
-                  <motion.div 
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"
-                  >
-                    <motion.a
-                      href="https://github.com/jainaditya2309/BuildupX.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-gradient-to-r from-slate-800 to-black border-2 border-slate-600 text-white rounded-xl font-medium hover:border-green-500/50 transition-all flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FaGithub className="text-lg" />
-                      <span>View Code</span>
-                    </motion.a>
-                  </motion.div>
+                  <motion.img 
+                    width={280} 
+                    height={160} 
+                    src="gif/optiflow.gif" 
+                    alt="OptiFlow"
+                    className="w-full h-40 object-cover rounded-xl"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                  />
                 </motion.div>
-
                 <div className="space-y-4">
                   <motion.h3 
-                    className="text-2xl font-bold bg-gradient-to-r from-green-400 to-teal-500 bg-clip-text text-transparent"
+                    className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent"
                     whileHover={{ scale: 1.02 }}
                   >
-                    BuildupX
+                    OptiFlow
                   </motion.h3>
-                  
                   <motion.p 
                     className="text-gray-300 text-sm leading-relaxed"
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    BuildupX is a modern fitness tracking and membership platform that empowers users to achieve their wellness goals. The app combines gym membership management, personalized diet planning, calorie tracking, and meal logging with an intuitive interface. Users can purchase membership plans, track nutrition, generate customized meal plans, and monitor their fitness progress—all in one seamless mobile-ready PWA.
+                    AI-Powered Task Management SaaS Platform. Secure JWT authentication, role-based access (Admin/User), complete task management (CRUD, categories, priorities, status), and real-time analytics dashboards. Responsive UI with Tailwind CSS and Framer Motion.
                   </motion.p>
-
                   <div className="flex flex-wrap gap-2">
-                    {["Next.js", "Tailwind", "Mongo Atlas", "Gemini API", "Auth", "JWT", "Web Manifest", "PWA"].map((tech, index) => (
-                      <motion.span
-                        key={tech}
-                        className="px-3 py-1 bg-slate-800/80 border border-slate-600 text-slate-300 rounded-lg text-xs font-medium"
-                        initial={{ opacity: 0, scale: 0 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.1 * index + 0.5 }}
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Project 4 - VaultX */}
-            <motion.div
-              className="relative group"
-              variants={projectVariants}
-              custom={3}
-              whileHover="hover"
-            >
-              {/* Timeline Node */}
-              <motion.div 
-                className="absolute -left-6 lg:left-1/2 lg:transform lg:-translate-x-1/2 w-6 h-6 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full border-4 border-slate-900 z-20"
-                whileHover={{ scale: 1.5 }}
-                transition={{ duration: 0.3 }}
-              />
-
-              <motion.div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 ml-8 lg:ml-0">
-                <motion.div className="relative mb-6 overflow-hidden rounded-xl group-hover:scale-105 transition-transform duration-500">
-                  <motion.a href="https://github.com/jainaditya2309/VaultX.git" target="_blank" rel="noopener noreferrer">
-                    <motion.img 
-                      width={280} 
-                      height={160} 
-                      src="gif/vaultx.gif" 
-                      alt="VaultX"
-                      className="w-full h-40 object-cover rounded-xl"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.a>
-                  
-                  {/* Hover Overlay */}
-                  <motion.div 
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"
-                  >
-                    <motion.a
-                      href="https://github.com/jainaditya2309/VaultX.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-6 py-3 bg-gradient-to-r from-slate-800 to-black border-2 border-slate-600 text-white rounded-xl font-medium hover:border-purple-500/50 transition-all flex items-center gap-2"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <FaGithub className="text-lg" />
-                      <span>View Code</span>
-                    </motion.a>
-                  </motion.div>
-                </motion.div>
-
-                <div className="space-y-4">
-                  <motion.h3 
-                    className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent"
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    VaultX
-                  </motion.h3>
-                  
-                  <motion.p 
-                    className="text-gray-300 text-sm leading-relaxed"
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    A sleek, secure password manager built with ReactJS, Tailwind CSS and MongoDB. Manage all your credentials in one organized place with advanced security.
-                  </motion.p>
-
-                  <div className="flex flex-wrap gap-2">
-                    {["React", "Tailwind", "MongoDB", "Security"].map((tech, index) => (
+                    {["Next.js", "Tailwind CSS", "Node.js", "Express.js", "MongoDB", "Auth"].map((tech, index) => (
                       <motion.span
                         key={tech}
                         className="px-3 py-1 bg-slate-800/80 border border-slate-600 text-slate-300 rounded-lg text-xs font-medium"
