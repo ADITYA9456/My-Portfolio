@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion'
 
 const About = () => {
+  const handleScrollToContact = () => {
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -441,7 +445,7 @@ const About = () => {
 
           {/* Right Section - Image */}
           <motion.div 
-            className="w-full lg:w-2/5 flex justify-center"
+            className="w-full lg:w-2/5 flex flex-col items-center lg:-mt-8"
             variants={imageVariants}
           >
             <motion.div 
@@ -465,8 +469,8 @@ const About = () => {
               {/* Main image */}
               <motion.div className="relative">
                 <motion.img 
-                  className="w-80 h-80 lg:w-96 lg:h-96 object-cover rounded-full shadow-2xl border-4 border-white/20" 
-                  src="images/img6.jpg" 
+                  className="w-80 h-80 lg:w-96 lg:h-96 object-cover object-top rounded-full shadow-2xl border-4 border-white/20" 
+                  src="images/Me.jpeg" 
                   alt="Aditya Jain - Web Developer"
                   whileHover={{ 
                     scale: 1.05,
@@ -513,6 +517,24 @@ const About = () => {
                   }}
                 />
               </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="mt-6 text-center"
+              variants={itemVariants}
+            >
+              <p className="text-xs text-gray-300/85 tracking-wide mb-2">
+                Open to opportunities & collaborations
+              </p>
+              <motion.button
+                type="button"
+                onClick={handleScrollToContact}
+                className="inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium text-white border border-purple-300/40 bg-white/10 backdrop-blur-sm hover:bg-purple-500/30 hover:border-purple-300/70 transition-all duration-300"
+                whileHover={{ y: -2, boxShadow: '0 10px 24px rgba(139, 92, 246, 0.35)' }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Let&apos;s Work Together
+              </motion.button>
             </motion.div>
           </motion.div>
         </div>

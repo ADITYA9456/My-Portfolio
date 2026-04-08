@@ -401,7 +401,7 @@ const Section = () => {
         >
           {[
             { number: "Fresher", label: "Years Experience" },
-            { number: "10+", label: "Projects Done" },
+            { number: "15+", label: "Projects Done" },
             { number: "Ready", label: "To Work" }
           ].map((stat, index) => (
             <motion.div 

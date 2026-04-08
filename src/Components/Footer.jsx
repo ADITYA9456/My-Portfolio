@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { FaGithub, FaHeart, FaLinkedin, FaRocket, FaWhatsapp } from "react-icons/fa"
+import { FaEnvelope, FaHeart, FaLinkedin, FaRocket, FaWhatsapp } from "react-icons/fa"
 
 const Footer = () => {
     const containerVariants = {
@@ -181,6 +181,7 @@ const Footer = () => {
 
                     {/* Connect Section */}
                     <motion.div 
+                        id="contact"
                         className="text-center md:text-right"
                         variants={itemVariants}
                     >
@@ -212,14 +213,12 @@ const Footer = () => {
                                 <FaLinkedin className="text-xl" />
                             </motion.a>
                             <motion.a
-                                href="https://github.com/ADITYA9456"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-3 bg-gradient-to-r from-purple-500/20 to-purple-400/20 border border-purple-400/30 rounded-xl text-purple-400 hover:bg-purple-500/30 transition-all duration-300"
+                                href="mailto:jainaditya2309@gmail.com"
+                                className="p-3 bg-gradient-to-r from-purple-500/20 to-pink-400/20 border border-purple-400/30 rounded-xl text-purple-300 hover:bg-purple-500/30 transition-all duration-300"
                                 variants={iconVariants}
                                 whileHover="hover"
                             >
-                                <FaGithub className="text-xl" />
+                                <FaEnvelope className="text-xl" />
                             </motion.a>
                         </div>
                         <motion.p 

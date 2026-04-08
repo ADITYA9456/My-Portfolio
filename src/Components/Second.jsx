@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { FaAws, FaBrain, FaCode, FaLaptopCode, FaMicrochip, FaPython, FaReact, FaRobot, FaServer } from 'react-icons/fa'
-import { SiGeeksforgeeks, SiLeetcode } from 'react-icons/si'
+import { FaAward, FaAws, FaBrain, FaCode, FaLaptopCode, FaMedal, FaMicrochip, FaPython, FaReact, FaRobot, FaServer } from 'react-icons/fa'
+import { SiGeeksforgeeks, SiHackerrank, SiLeetcode } from 'react-icons/si'
 
 import aiBadgeImg from '../../Certificate/Ai.png'
 import awsCertificatePdf from '../../Certificate/AWS.pdf'
@@ -32,22 +32,40 @@ const badges = [
       }
     ]
   },
+  {
+    title: 'Badges',
+    Icon: FaMedal,
+    links: [
+      {
+        label: 'Hackerrank',
+        href: 'https://www.hackerrank.com/profile/jainaditya2309',
+        Icon: SiHackerrank,
+        className: 'from-emerald-400/25 via-green-500/20 to-teal-300/25 border-emerald-300/50 text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:shadow-[0_0_24px_rgba(16,185,129,0.55)]'
+      },
+      {
+        label: 'Credly',
+        href: 'https://www.credly.com/users/aditya-jain.611d9b0a/edit#credly',
+        Icon: FaAward,
+        className: 'from-sky-400/25 via-cyan-500/20 to-blue-300/25 border-sky-300/50 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.35)] hover:shadow-[0_0_24px_rgba(59,130,246,0.55)]'
+      }
+    ]
+  },
 ]
 
 const skillJourney = [
   {
-    title: 'Frontend Developer',
-    description: 'Skilled in creating responsive, user-friendly web interfaces using HTML, CSS, JavaScript, and modern frameworks like React. I focus on delivering visually appealing and optimized designs for seamless user experiences.',
+    title: 'Frontend',
+    description: 'I turn ideas into interactive web experiences using HTML, CSS, JavaScript, and modern frameworks like React and Next.js. I enjoy crafting interfaces that feel smooth, intuitive, and actually enjoyable to use, not just something that looks good on screen.',
     Icon: FaLaptopCode,
   },
   {
-    title: 'Backend Developer',
-    description: 'Experienced in building secure, scalable, and efficient server-side applications. Proficient in languages like Node.js, Python, or PHP, with expertise in databases and APIs to ensure seamless functionality.',
+    title: 'Backend',
+    description: 'I develop scalable backend systems using Node.js and Express.js, with a strong focus on API design and performance. Skilled in managing databases like MongoDB, MySQL, and Supabase. I have hands-on experience integrating authentication, payment systems, and AI-driven features to build complete, production-ready applications.',
     Icon: FaServer,
   },
   {
     title: 'Coding Skills',
-    description: 'Familiar with Java fundamentals, including syntax, object-oriented programming concepts, loops, conditional statements, and basic exception handling. Capable of writing efficient programs.',
+    description: 'I work with Java and Python to solve problems and build practical solutions. I have a good understanding of core concepts like logic building, object-oriented programming, and basic data structures. I try to keep my code simple, readable, and easy to manage.',
     Icon: FaCode,
   },
   {
@@ -190,7 +208,7 @@ const Second = () => {
         </p>
       </div>
 
-      <div className="relative max-w-6xl mx-auto mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="relative max-w-6xl mx-auto mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4">
         {badges.map(({ title, status, href, links, Icon }, index) => (
           <motion.div
             key={title}
@@ -210,16 +228,16 @@ const Second = () => {
             </motion.div>
             <h3 className="text-lg font-bold min-h-[56px] flex items-center justify-center leading-tight">{title}</h3>
             {links ? (
-              <div className="mt-auto pt-2 flex justify-center gap-2">
+              <div className="mt-auto pt-2 flex flex-col gap-2 w-full">
                 {links.map((item) => (
                   <a
                     key={item.label}
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center gap-1.5 text-[10px] tracking-wide uppercase px-2.5 py-1 rounded-md border bg-gradient-to-r transition-all duration-300 ${item.className}`}
+                    className={`inline-flex w-full items-center justify-center gap-1.5 text-[10px] tracking-[0.04em] uppercase px-2 py-1.5 rounded-md border bg-gradient-to-r transition-all duration-300 ${item.className}`}
                   >
-                    {item.Icon ? <item.Icon className="text-xs" /> : null}
+                    {item.Icon ? <item.Icon className="text-[11px]" /> : null}
                     {item.label}
                   </a>
                 ))}
