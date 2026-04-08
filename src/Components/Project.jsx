@@ -43,12 +43,142 @@ const Second = () => {
   return (
     <motion.section
       id="projects"
-      className="scroll-mt-24 relative overflow-hidden min-h-screen py-16 px-4 sm:px-6 lg:px-20 bg-transparent"
+      className="scroll-mt-24 relative isolate overflow-hidden min-h-screen py-16 px-4 sm:px-6 lg:px-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.1 }}
     >
-      <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)', backgroundSize: '4px 4px' }} />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            rotate: 360,
+            scale: [1, 1.28, 1],
+            x: [0, 100, 0],
+            y: [0, -50, 0]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute -top-24 -left-24 w-72 h-72 bg-gradient-to-r from-fuchsia-500/15 to-violet-500/15 rounded-full blur-3xl"
+        />
+
+        <motion.div
+          animate={{
+            rotate: -360,
+            scale: [1.15, 1, 1.45, 1.15],
+            x: [0, -80, 0],
+            y: [0, 100, 0]
+          }}
+          transition={{
+            duration: 24,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-to-r from-indigo-500/12 to-purple-500/12 rounded-full blur-3xl"
+        />
+
+        <motion.div
+          animate={{
+            rotate: 180,
+            scale: [1, 1.35, 1],
+            x: [0, -120, 0],
+            y: [0, -80, 0]
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute top-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-cyan-500/8 to-fuchsia-500/10 rounded-full blur-2xl"
+        />
+
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`project-particle-${i}`}
+            className="absolute w-2 h-2 bg-purple-300/40 rounded-full"
+            animate={{
+              x: [0, Math.random() * 320 - 160],
+              y: [0, Math.random() * 320 - 160],
+              opacity: [0, 0.85, 0],
+              scale: [0, 1.4, 0]
+            }}
+            transition={{
+              duration: Math.random() * 10 + 8,
+              repeat: Infinity,
+              delay: i * 1.5,
+              ease: 'easeInOut'
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`
+            }}
+          />
+        ))}
+
+        <motion.div
+          animate={{
+            rotate: 360,
+            x: [0, 200, -100, 0],
+            y: [0, -150, 100, 0]
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute top-1/4 left-1/4 w-16 h-16 border border-purple-400/20 rotate-45"
+        />
+
+        <motion.div
+          animate={{
+            rotate: -360,
+            x: [0, -150, 200, 0],
+            y: [0, 100, -80, 0]
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-gradient-to-r from-pink-500/15 to-purple-500/15 rounded-full blur-sm"
+        />
+
+        <motion.div
+          className="absolute inset-0 opacity-[0.03]"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%']
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          style={{
+            backgroundImage: `
+              linear-gradient(90deg, #8b5cf6 1px, transparent 1px),
+              linear-gradient(0deg, #8b5cf6 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        />
+
+        <motion.div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          animate={{
+            scale: [0, 4],
+            opacity: [0.35, 0]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: 'easeOut'
+          }}
+        >
+          <div className="w-40 h-40 border border-violet-400/20 rounded-full" />
+        </motion.div>
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div className="text-center mb-10" initial={{ y: 16, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>

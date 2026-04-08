@@ -7,7 +7,6 @@ import awsCertificatePdf from '../../Certificate/AWS.pdf'
 import frontendReactCertificatePdf from '../../Certificate/frontend_developer_react certificate.pdf'
 import pythonCertificatePdf from '../../Certificate/Python.pdf'
 import roboticsBadgeImg from '../../Certificate/Robotics.png'
-import Second from './Project'
 
 const badges = [
   { title: 'Python', status: 'View Certificate', href: pythonCertificatePdf, Icon: FaPython },
@@ -58,18 +57,130 @@ const skillJourney = [
   },
 ]
 
-const MySkillsSection = () => {
+const Second = () => {
   return (
     <motion.section
       id="skills"
-      className="scroll-mt-24 relative overflow-hidden bg-transparent px-4 sm:px-6 lg:px-20 py-14 text-white"
+      className="scroll-mt-24 relative isolate overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 sm:px-6 lg:px-20 py-14 text-white"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-20 left-10 w-72 h-72 rounded-full bg-purple-500/15 blur-3xl" />
-        <div className="absolute -bottom-24 right-6 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            rotate: 360,
+            scale: [1, 1.3, 1],
+            x: [0, 100, 0],
+            y: [0, -50, 0]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute -top-24 -right-24 w-72 h-72 bg-gradient-to-r from-purple-600/16 to-pink-600/16 rounded-full blur-3xl"
+        />
+
+        <motion.div
+          animate={{
+            rotate: -360,
+            scale: [1.15, 1, 1.4, 1.15],
+            x: [0, -80, 0],
+            y: [0, 100, 0]
+          }}
+          transition={{
+            duration: 24,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute -bottom-32 -left-32 w-96 h-96 bg-gradient-to-r from-violet-500/14 to-indigo-500/14 rounded-full blur-3xl"
+        />
+
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={`skills-particle-${i}`}
+            className="absolute w-2 h-2 bg-purple-300/40 rounded-full"
+            animate={{
+              x: [0, Math.random() * 300 - 150],
+              y: [0, Math.random() * 300 - 150],
+              opacity: [0, 0.8, 0],
+              scale: [0, 1.5, 0]
+            }}
+            transition={{
+              duration: Math.random() * 10 + 8,
+              repeat: Infinity,
+              delay: i * 1.5,
+              ease: 'easeInOut'
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`
+            }}
+          />
+        ))}
+
+        <motion.div
+          animate={{
+            rotate: 360,
+            x: [0, 200, -100, 0],
+            y: [0, -150, 100, 0]
+          }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute top-1/4 left-1/4 w-16 h-16 border border-purple-400/20 rotate-45"
+        />
+
+        <motion.div
+          animate={{
+            rotate: -360,
+            x: [0, -150, 200, 0],
+            y: [0, 100, -80, 0]
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-gradient-to-r from-pink-500/15 to-purple-500/15 rounded-full blur-sm"
+        />
+
+        <motion.div
+          className="absolute inset-0 opacity-[0.03]"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%']
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          style={{
+            backgroundImage: `
+              linear-gradient(90deg, #8b5cf6 1px, transparent 1px),
+              linear-gradient(0deg, #8b5cf6 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px'
+          }}
+        />
+
+        <motion.div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+          animate={{
+            scale: [0, 3.5],
+            opacity: [0.3, 0]
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: 'easeOut'
+          }}
+        >
+          <div className="w-32 h-32 border border-purple-400/20 rounded-full" />
+        </motion.div>
       </div>
 
       <div className="relative max-w-6xl mx-auto text-center space-y-3">
