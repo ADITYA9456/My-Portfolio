@@ -97,8 +97,32 @@ const About = () => {
   }
 
   const skills = [
-    "HTML", "CSS", "JavaScript", "React", "Node.js", 
-    "NextJS", "Express", "Tailwind CSS", "MongoDB", "IoT", "Embedded Systems"
+    'HTML',
+    'CSS',
+    'JavaScript',
+    'React',
+    'Node.js',
+    'NextJS',
+    'Express',
+    'Tailwind CSS',
+    'MongoDB',
+    'IoT',
+    'Embedded Systems',
+    'Java',
+    'Python',
+    'REST APIs',
+    'MySQL',
+    'Supabase',
+    'Data Structures & Algorithms (DSA)',
+    'Generative AI',
+    'Agentic AI',
+    'Git',
+    'GitHub',
+    'Postman',
+    'Vercel',
+    'VS Code',
+    'NextAuth.js',
+    'Razorpay'
   ]
 
   return (
