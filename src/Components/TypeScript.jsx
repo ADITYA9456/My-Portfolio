@@ -8,8 +8,15 @@ const TypeScript = () => {
   useEffect(() => {
     // Initialize Typed.js
     typedInstance.current = new Typed(typedElement.current, {
-      strings: ['Web Developer', 'Robotic Engineer', 'Vedio Editor'],
+      strings: [
+        'Web Developer',
+        'Frontend Developer',
+        'Backend Developer',
+        'Full Stack Developer',
+        'Problem Solver',
+      ],
       typeSpeed: 50,
+      loop: true,
     });
 
     // Cleanup on component unmount
