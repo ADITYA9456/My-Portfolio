@@ -2,6 +2,8 @@ import { motion } from 'framer-motion'
 import { FaEnvelope, FaHeart, FaLinkedin, FaRocket, FaWhatsapp } from "react-icons/fa"
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear()
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -247,7 +249,7 @@ const Footer = () => {
                         className="flex items-center gap-2 text-gray-500 text-sm"
                         variants={itemVariants}
                     >
-                        <span>&copy; 2025 Aditya Jain. All rights reserved.</span>
+                        <span>&copy; {currentYear} Aditya Jain. All rights reserved.</span>
                     </motion.div>
                     
                     <motion.div 

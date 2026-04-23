@@ -2,12 +2,12 @@ import { motion } from 'framer-motion'
 import { FaAward, FaAws, FaBrain, FaCode, FaLaptopCode, FaMedal, FaMicrochip, FaPython, FaReact, FaRobot, FaServer } from 'react-icons/fa'
 import { SiGeeksforgeeks, SiHackerrank, SiLeetcode, SiUdemy } from 'react-icons/si'
 
-import aiBadgeImg from '../../Certificate/Ai.png'
-import awsCertificatePdf from '../../Certificate/AWS.pdf'
-import frontendReactCertificatePdf from '../../Certificate/frontend_developer_react certificate.pdf'
-import pythonCertificatePdf from '../../Certificate/Python.pdf'
-import roboticsBadgeImg from '../../Certificate/Robotics.png'
-import udemyGenerativeAiCertificatePdf from '../../Certificate/udemy generative ai.pdf'
+const aiBadgeImg = '/Certificate/Ai.png'
+const awsCertificatePdf = '/Certificate/AWS.pdf'
+const frontendReactCertificatePdf = '/Certificate/frontend_developer_react%20certificate.pdf'
+const pythonCertificatePdf = '/Certificate/Python.pdf'
+const roboticsBadgeImg = '/Certificate/Robotics.png'
+const udemyGenerativeAiCertificatePdf = '/Certificate/udemy%20generative%20ai.pdf'
 
 const badges = [
   { title: 'Python', status: 'View Certificate', href: pythonCertificatePdf, Icon: FaPython },
