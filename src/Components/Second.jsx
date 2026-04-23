@@ -1,19 +1,37 @@
 import { motion } from 'framer-motion'
 import { FaAward, FaAws, FaBrain, FaCode, FaLaptopCode, FaMedal, FaMicrochip, FaPython, FaReact, FaRobot, FaServer } from 'react-icons/fa'
-import { SiGeeksforgeeks, SiHackerrank, SiLeetcode } from 'react-icons/si'
+import { SiGeeksforgeeks, SiHackerrank, SiLeetcode, SiUdemy } from 'react-icons/si'
 
 import aiBadgeImg from '../../Certificate/Ai.png'
 import awsCertificatePdf from '../../Certificate/AWS.pdf'
 import frontendReactCertificatePdf from '../../Certificate/frontend_developer_react certificate.pdf'
 import pythonCertificatePdf from '../../Certificate/Python.pdf'
 import roboticsBadgeImg from '../../Certificate/Robotics.png'
+import udemyGenerativeAiCertificatePdf from '../../Certificate/udemy generative ai.pdf'
 
 const badges = [
   { title: 'Python', status: 'View Certificate', href: pythonCertificatePdf, Icon: FaPython },
   { title: 'Frontend Development', status: 'View Certificate', href: frontendReactCertificatePdf, Icon: FaReact },
   { title: 'AWS', status: 'View Certificate', href: awsCertificatePdf, Icon: FaAws },
   { title: 'Robotics', status: 'View Certificate', href: roboticsBadgeImg, Icon: FaRobot },
-  { title: 'Generative AI', status: 'View Certificate', href: aiBadgeImg, Icon: FaMicrochip },
+  {
+    title: 'Generative AI',
+    Icon: FaMicrochip,
+    links: [
+      {
+        label: 'Certificate',
+        href: aiBadgeImg,
+        Icon: FaAward,
+        className: 'from-sky-400/25 via-cyan-500/20 to-blue-300/25 border-sky-300/50 text-sky-100 shadow-[0_0_18px_rgba(56,189,248,0.35)] hover:shadow-[0_0_24px_rgba(59,130,246,0.55)]'
+      },
+      {
+        label: 'Certificate',
+        href: udemyGenerativeAiCertificatePdf,
+        Icon: SiUdemy,
+        className: 'from-emerald-400/25 via-green-500/20 to-lime-300/25 border-emerald-300/50 text-emerald-100 shadow-[0_0_18px_rgba(16,185,129,0.35)] hover:shadow-[0_0_24px_rgba(34,197,94,0.55)]'
+      }
+    ]
+  },
   {
     title: 'Problem Solver',
     Icon: FaBrain,
