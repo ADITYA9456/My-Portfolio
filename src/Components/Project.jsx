@@ -33,7 +33,7 @@ const projects = [
     glow: 'shadow-[0_0_45px_rgba(232,121,249,0.35)]',
     button: 'from-fuchsia-600/90 to-pink-600/90 border-fuchsia-300/40',
     sourceLink: 'https://github.com/ADITYA9456/optiflow',
-    liveUnavailable: true
+    liveLink: 'https://optiflow-steel.vercel.app/'
   }
 ]
 
