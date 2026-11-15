@@ -135,6 +135,24 @@ void main() {
 }
 `
 
+const RING_VERT = /* glsl */ `
+uniform float uTime;
+uniform float uSize;
+uniform float uOn;
+uniform float uSpeed;
+attribute float aT;
+attribute float aRand;
+varying float vBright;
+void main() {
+  float head = fract(aT - uTime * uSpeed);
+  float comet = pow(head, 9.0);
+  vBright = (0.38 + comet * 1.6 + aRand * 0.15) * uOn;
+  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = uSize * (0.4 + comet * 0.9 + aRand * 0.3) / -mv.z;
+}
+`
+
 const LIGHT_VERT = /* glsl */ `
 uniform vec3 uLight;
 uniform float uSize;
@@ -184,7 +202,7 @@ void main() {
 }
 `
 
-export function createBustScene({ container, url, cutFraction, reducedMotion, onProgress, onReady, onError }) {
+export function createBustScene({ container, url, cutFraction, hide, reducedMotion, onProgress, onReady, onError }) {
   let disposed = false
   const abort = new AbortController()
   const cleanups = []
@@ -224,7 +242,7 @@ export function createBustScene({ container, url, cutFraction, reducedMotion, on
     const gltf = await loadModel(url, abort.signal)
     if (disposed) return
     onProgress(0.4)
-    const data = await buildBustDots(gltf, TOTAL_DOTS, slice, cutFraction)
+    const data = await buildBustDots(gltf, TOTAL_DOTS, slice, cutFraction, hide)
     if (disposed) return
 
     renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
@@ -280,7 +298,7 @@ export function createBustScene({ container, url, cutFraction, reducedMotion, on
     const lightPoint = new Points(lightGeo, lightMat)
     lightPoint.frustumCulled = false
 
-    const DUST = 900
+    const DUST = 1500
     const dustPos = new Float32Array(DUST * 3)
     const dustRand = new Float32Array(DUST)
     for (let i = 0; i < DUST; i++) {
@@ -302,7 +320,48 @@ export function createBustScene({ container, url, cutFraction, reducedMotion, on
     const dustPoints = new Points(dustGeo, dustMat)
     dustPoints.frustumCulled = false
 
-    scene.add(dustPoints, bust, lightPoint)
+    const makeRing = ({ cx, cy, cz, rx, ry, rotY, rotZ, from = 0, to = 1, count = 2200, speed = 0.05 }) => {
+      const p = new Float32Array(count * 3)
+      const tt = new Float32Array(count)
+      const rr = new Float32Array(count)
+      for (let i = 0; i < count; i++) {
+        const u = i / count
+        const a = (from + (to - from) * u) * Math.PI * 2
+        p[i * 3] = Math.cos(a) * rx + (Math.random() - 0.5) * 0.012
+        p[i * 3 + 1] = Math.sin(a) * ry + (Math.random() - 0.5) * 0.012
+        p[i * 3 + 2] = (Math.random() - 0.5) * 0.012
+        tt[i] = u
+        rr[i] = Math.random()
+      }
+      const geo = new BufferGeometry()
+      geo.setAttribute('position', new Float32BufferAttribute(p, 3))
+      geo.setAttribute('aT', new Float32BufferAttribute(tt, 1))
+      geo.setAttribute('aRand', new Float32BufferAttribute(rr, 1))
+      const mat = new ShaderMaterial({
+        uniforms: {
+          uTime: bustUniforms.uTime,
+          uSize: { value: 20 * dpr },
+          uOn: dustUniforms.uOn,
+          uSpeed: { value: speed },
+          uInk: { value: ink },
+        },
+        vertexShader: RING_VERT,
+        fragmentShader: DUST_FRAG,
+        ...blend,
+      })
+      const pts = new Points(geo, mat)
+      pts.frustumCulled = false
+      pts.position.set(cx, cy, cz)
+      pts.rotation.set(0, rotY, rotZ)
+      disposables.push(geo, mat)
+      return pts
+    }
+    const orbitA = makeRing({ cx: 0.35, cy: 0.45, cz: 0, rx: 3.3, ry: 0.85, rotY: 0.3, rotZ: 0.3, speed: 0.045 })
+    const orbitB = makeRing({ cx: 0.4, cy: -1.05, cz: 0, rx: 3.6, ry: 0.8, rotY: 0.25, rotZ: 0.2, speed: -0.06 })
+    const orbitC = makeRing({ cx: -0.4, cy: 0.9, cz: -1.2, rx: 3.5, ry: 3.5, rotY: 0, rotZ: 0, from: 0.5, to: 0.8, count: 900, speed: 0.02 })
+    const orbits = [orbitA, orbitB, orbitC]
+
+    scene.add(dustPoints, bust, lightPoint, ...orbits)
     disposables.push(bustGeo, bustMat, lightGeo, lightMat, dustGeo, dustMat)
 
     let width = 1
@@ -313,7 +372,9 @@ export function createBustScene({ container, url, cutFraction, reducedMotion, on
       renderer.setSize(width, height, false)
       camera.aspect = width / height
       const distance = Math.max(2.35 / TAN15, 1.7 / (TAN15 * camera.aspect))
-      camera.position.set(0, -0.15, distance)
+      const shift = camera.aspect > 1.25 ? 0.95 : 0
+      target.x = -shift
+      camera.position.set(-shift, -0.15, distance)
       camera.lookAt(target)
       camera.updateProjectionMatrix()
       camera.updateMatrixWorld()
@@ -390,7 +451,7 @@ export function createBustScene({ container, url, cutFraction, reducedMotion, on
           head.lerp(headGoal, 1 - Math.exp(-dt * 1.5))
         }
       }
-      uHead.set(head.x, -head.y)
+      uHead.set(head.x + 0.14, -head.y - 0.12)
       return assemble
     }
 

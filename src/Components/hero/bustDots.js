@@ -15,11 +15,11 @@ export async function loadModel(url, signal) {
   })
 }
 
-function mergeBust(gltf, cutFraction) {
+function mergeBust(gltf, cutFraction, hide) {
   gltf.scene.updateMatrixWorld(true)
   const parts = []
   gltf.scene.traverse((o) => {
-    if (!o.isMesh) return
+    if (!o.isMesh || (hide && hide.test(o.name))) return
     const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()
     g.applyMatrix4(o.matrixWorld)
     if (!g.attributes.normal) g.computeVertexNormals()
@@ -59,9 +59,9 @@ function mergeBust(gltf, cutFraction) {
   return geometry
 }
 
-export async function buildBustDots(gltf, total, slice, cutFraction = 0) {
+export async function buildBustDots(gltf, total, slice, cutFraction = 0, hide = null) {
   await slice()
-  const geometry = mergeBust(gltf, cutFraction)
+  const geometry = mergeBust(gltf, cutFraction, hide)
   const box = geometry.boundingBox
   const scale = HEIGHT / (box.max.y - box.min.y)
   const cx = (box.max.x + box.min.x) / 2
@@ -100,13 +100,50 @@ export async function buildBustDots(gltf, total, slice, cutFraction = 0) {
   }
   geometry.dispose()
 
+  // Hair: the avatar's own hair is hidden, so grow curly strands from the scalp samples.
+  let zc = 0
+  let zn = 0
+  for (let i = 0; i < CAND; i++) {
+    if (maxY - cp[i * 3 + 1] < 1) {
+      zc += cp[i * 3 + 2]
+      zn++
+    }
+  }
+  zc = zn ? zc / zn : 0
+  const hair = []
+  const skin = []
+  for (let i = 0; i < CAND; i++) {
+    const rel = maxY - cp[i * 3 + 1]
+    const front = cp[i * 3 + 2] > zc + 0.22
+    const isHair = rel < 1.25 && (front ? rel < 0.5 : true) && Math.abs(cp[i * 3]) < 1.35
+    if (isHair) hair.push(i)
+    else skin.push(i)
+  }
+  const hairCount = hair.length
+    ? Math.min(hair.length, Math.round(total * (hide ? 0.24 : 0)))
+    : 0
+  const order = hair.slice(0, hairCount).concat(skin)
+  const ridgeBoost = new Float32Array(total)
   for (let d = 0; d < headCount; d++) {
-    pos[d * 3] = cp[d * 3]
-    pos[d * 3 + 1] = cp[d * 3 + 1]
-    pos[d * 3 + 2] = cp[d * 3 + 2]
-    nor[d * 3] = cn[d * 3]
-    nor[d * 3 + 1] = cn[d * 3 + 1]
-    nor[d * 3 + 2] = cn[d * 3 + 2]
+    const i = order[d % order.length]
+    let x = cp[i * 3]
+    let y = cp[i * 3 + 1]
+    let z = cp[i * 3 + 2]
+    if (d < hairCount) {
+      const r = Math.random()
+      const lift = 0.03 + 0.14 * r * r
+      const k = (x * 11 + y * 13 + z * 7) * 9 + r * 6
+      x += cn[i * 3] * lift + Math.sin(k) * 0.055
+      y += cn[i * 3 + 1] * lift + Math.cos(k * 1.3) * 0.055 + 0.03
+      z += cn[i * 3 + 2] * lift + Math.sin(k * 0.7) * 0.055
+      ridgeBoost[d] = 0.6
+    }
+    pos[d * 3] = x
+    pos[d * 3 + 1] = y
+    pos[d * 3 + 2] = z
+    nor[d * 3] = cn[i * 3]
+    nor[d * 3 + 1] = cn[i * 3 + 1]
+    nor[d * 3 + 2] = cn[i * 3 + 2]
   }
 
   // Surface relief and thin-area shading from neighbouring head samples.
@@ -173,7 +210,7 @@ export async function buildBustDots(gltf, total, slice, cutFraction = 0) {
   const p90 = absSorted[Math.floor(headCount * 0.9)] || 1
   const shade = new Float32Array(total * 2)
   for (let d = 0; d < headCount; d++) {
-    shade[d * 2] = Math.max(-1, Math.min(1, ridgeRaw[d] / p90))
+    shade[d * 2] = Math.max(-1, Math.min(1, ridgeRaw[d] / p90 + ridgeBoost[d]))
     shade[d * 2 + 1] = 0
   }
 
