@@ -1,4 +1,4 @@
-import { Mesh, Vector3 } from 'three'
+import { BufferGeometry, Float32BufferAttribute, Mesh, Vector3 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js'
 
@@ -15,25 +15,58 @@ export async function loadModel(url, signal) {
   })
 }
 
-export async function buildBustDots(gltf, total, slice) {
-  await slice()
+function mergeBust(gltf, cutFraction) {
   gltf.scene.updateMatrixWorld(true)
-  let sourceMesh = null
+  const parts = []
   gltf.scene.traverse((o) => {
-    if (!sourceMesh && o.isMesh) sourceMesh = o
+    if (!o.isMesh) return
+    const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone()
+    g.applyMatrix4(o.matrixWorld)
+    if (!g.attributes.normal) g.computeVertexNormals()
+    parts.push(g)
   })
-  if (!sourceMesh) throw new Error('Model has no mesh')
+  if (!parts.length) throw new Error('Model has no mesh')
 
-  const geometry = sourceMesh.geometry.clone()
-  geometry.applyMatrix4(sourceMesh.matrixWorld)
-  if (!geometry.attributes.normal) geometry.computeVertexNormals()
+  let top = -Infinity
+  let bottom = Infinity
+  for (const g of parts) {
+    const p = g.attributes.position
+    for (let i = 0; i < p.count; i++) {
+      top = Math.max(top, p.getY(i))
+      bottom = Math.min(bottom, p.getY(i))
+    }
+  }
+  const cutY = cutFraction ? top - (top - bottom) * cutFraction : bottom
+
+  const pos = []
+  const nor = []
+  for (const g of parts) {
+    const p = g.attributes.position
+    const n = g.attributes.normal
+    for (let i = 0; i + 2 < p.count; i += 3) {
+      if ((p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3 < cutY) continue
+      for (let k = 0; k < 3; k++) {
+        pos.push(p.getX(i + k), p.getY(i + k), p.getZ(i + k))
+        nor.push(n.getX(i + k), n.getY(i + k), n.getZ(i + k))
+      }
+    }
+    g.dispose()
+  }
+  const geometry = new BufferGeometry()
+  geometry.setAttribute('position', new Float32BufferAttribute(pos, 3))
+  geometry.setAttribute('normal', new Float32BufferAttribute(nor, 3))
   geometry.computeBoundingBox()
+  return geometry
+}
+
+export async function buildBustDots(gltf, total, slice, cutFraction = 0) {
+  await slice()
+  const geometry = mergeBust(gltf, cutFraction)
   const box = geometry.boundingBox
   const scale = HEIGHT / (box.max.y - box.min.y)
   const cx = (box.max.x + box.min.x) / 2
   const cz = (box.max.z + box.min.z) / 2
   await slice()
-
   const headCount = total
   const sampler = new MeshSurfaceSampler(new Mesh(geometry)).build()
 

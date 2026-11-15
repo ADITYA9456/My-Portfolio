@@ -184,7 +184,7 @@ void main() {
 }
 `
 
-export function createBustScene({ container, url, reducedMotion, onProgress, onReady, onError }) {
+export function createBustScene({ container, url, cutFraction, reducedMotion, onProgress, onReady, onError }) {
   let disposed = false
   const abort = new AbortController()
   const cleanups = []
@@ -224,7 +224,7 @@ export function createBustScene({ container, url, reducedMotion, onProgress, onR
     const gltf = await loadModel(url, abort.signal)
     if (disposed) return
     onProgress(0.4)
-    const data = await buildBustDots(gltf, TOTAL_DOTS, slice)
+    const data = await buildBustDots(gltf, TOTAL_DOTS, slice, cutFraction)
     if (disposed) return
 
     renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })

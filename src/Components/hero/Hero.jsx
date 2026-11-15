@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
-const BUST_MODEL_URL = '/models/bust.glb'
+const BUST_MODEL_URL = '/models/avatar.glb'
+const CUT_FRACTION = 0.215
 
 const RING_DOTS = 96
 const RING = Array.from({ length: RING_DOTS }, (_, i) => {
@@ -28,6 +29,7 @@ const Hero = () => {
         scene = createBustScene({
           container: stageRef.current,
           url: BUST_MODEL_URL,
+          cutFraction: CUT_FRACTION,
           reducedMotion,
           onProgress: setProgress,
           onReady: () => setPhase('ready'),
