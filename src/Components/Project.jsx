@@ -39,7 +39,7 @@ const tagClass = 'px-3 py-1 font-mono text-xs rounded-full border border-rule te
 const primaryButtonClass = 'inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-surface text-ink font-medium ring-1 ring-line transition-opacity duration-300 hover:opacity-90'
 const ghostButtonClass = 'inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-paper/30 text-paper font-medium hover:border-paper hover:bg-paper/10 transition-colors duration-300'
 
-const Second = () => {
+const Project = () => {
   const cardTransition = { duration: 0.45, ease: [0.22, 1, 0.36, 1] }
 
   return (
@@ -53,14 +53,20 @@ const Second = () => {
       <div className="relative z-10 max-w-7xl mx-auto">
         <motion.div className="text-center mb-10" {...rise}>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-rule text-tech font-mono text-xs uppercase tracking-[0.12em]">
-            <FaRocket />
+            <motion.span
+              className="inline-flex"
+              animate={{ y: [0, -3, 0], rotate: [0, -8, 0] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <FaRocket />
+            </motion.span>
             <span>Featured Work</span>
           </div>
           <h2 className="mt-4 text-4xl sm:text-5xl font-normal tracking-tight text-paper">
             My Projects
           </h2>
           <p className="mt-3 text-paper/70 text-lg max-w-2xl mx-auto">A showcase of innovative solutions built using modern technologies</p>
-          <div className="mt-5 mx-auto h-px w-40 bg-tech" />
+          <motion.div className="mt-5 mx-auto h-px w-40 bg-tech" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} />
         </motion.div>
 
         <div className="relative">
@@ -73,13 +79,14 @@ const Second = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ ...cardTransition, delay: index * 0.12 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -8, transition: { duration: 0.25, delay: 0 } }}
               >
                 <div className="rounded-xl overflow-hidden border border-rule bg-night p-2">
                   {project.image ? (
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-40 object-contain rounded-lg"
+                      className="w-full h-40 object-contain rounded-lg transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                       decoding="async"
                     />
@@ -144,7 +151,7 @@ const Second = () => {
         </div>
 
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div className={cardClass} {...rise} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div className={cardClass} {...rise} whileHover={{ y: -6, transition: { duration: 0.25 } }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
             <h3 className="text-4xl font-normal tracking-tight text-paper">Project Showcase Website</h3>
             <p className="mt-4 text-lg text-paper/70 leading-relaxed">A dedicated website featuring <strong className="font-medium text-paper">video demos</strong>, <strong className="font-medium text-paper">live previews</strong>, <strong className="font-medium text-paper">source code</strong>, and detailed documentation for all my projects.</p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -164,10 +171,14 @@ const Second = () => {
             </a>
           </motion.div>
 
-          <motion.div className={cardClass} {...rise} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
-            <div className="w-16 h-16 rounded-2xl border border-rule flex items-center justify-center">
+          <motion.div className={cardClass} {...rise} whileHover={{ y: -6, transition: { duration: 0.25 } }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
+            <motion.div
+              className="w-16 h-16 rounded-2xl border border-rule flex items-center justify-center"
+              whileHover={{ rotate: 360 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
               <FaGithub className="text-3xl text-dots" />
-            </div>
+            </motion.div>
             <h3 className="mt-4 text-4xl font-normal tracking-tight text-paper">Explore More Projects</h3>
             <p className="mt-3 text-lg text-paper/70">I have created many more projects. Check out complete collection of innovative solutions on GitHub.</p>
             <a
@@ -187,4 +198,4 @@ const Second = () => {
   )
 }
 
-export default Second
+export default Project

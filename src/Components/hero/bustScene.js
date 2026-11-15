@@ -3,7 +3,6 @@ import {
   BufferGeometry,
   Color,
   Float32BufferAttribute,
-  Mesh,
   PerspectiveCamera,
   Points,
   Scene,
@@ -12,14 +11,9 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js'
+import { buildPortraitDots, loadImage } from './portraitDots.js'
 
 const TOTAL_DOTS = 66000
-const CANDIDATES = TOTAL_DOTS * 5
-const VOXEL = 0.022
-const SHADE_R = 0.03
-const FALLBACK_BYTES = 1.5e6
 const FRAME_BUDGET_MS = 12
 const TAN15 = Math.tan(Math.PI / 12)
 const ABORT = Symbol('abort')
@@ -41,6 +35,7 @@ uniform float uRingRadius;
 attribute float aRand;
 attribute vec2 aShade;
 attribute float aPart;
+attribute float aTone;
 varying float vAlpha;
 varying float vBright;
 varying float vShine;
@@ -62,9 +57,9 @@ mat3 rotX(float a) {
 void main() {
   float r2 = fract(sin(aRand * 91.7) * 43758.5453);
 
-  float head = smoothstep(-1.3, -0.6, position.y);
+  float head = smoothstep(-0.95, -0.2, position.y);
   mat3 rot = rotY(uHead.x * (0.25 + 0.75 * head)) * rotX(uHead.y * head);
-  vec3 pivot = vec3(0.0, -1.0, 0.0);
+  vec3 pivot = vec3(0.0, -0.6, 0.0);
   vec3 home = rot * (position - pivot) + pivot;
   vec3 n = normalize(rot * normal);
 
@@ -99,6 +94,7 @@ void main() {
   b *= mix(1.0, 0.78, max(isFrame, isLens));
   b *= mix(1.0, 0.7, isLens);
   b *= 0.7 + r2 * 0.5;
+  b *= 0.15 + 1.25 * pow(aTone, 1.3);
 
   float special = max(isLeaf, max(isFrame, isLens));
   float glint = (1.0 - smoothstep(0.0, 0.09, abs(position.x - uGlint))) * special;
@@ -190,369 +186,6 @@ void main() {
 }
 `
 
-async function downloadModel(url, signal, onProgress) {
-  const res = await fetch(url, { signal })
-  if (!res.ok) throw new Error(`Model request failed: ${res.status}`)
-  const total = Number(res.headers.get('Content-Length')) || 0
-  const reader = res.body.getReader()
-  const chunks = []
-  let received = 0
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
-    received += value.length
-    const p = total ? received / total : Math.min(0.95, received / FALLBACK_BYTES)
-    onProgress(Math.min(0.99, p))
-  }
-  const bytes = new Uint8Array(received)
-  let offset = 0
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset)
-    offset += chunk.length
-  }
-  return bytes.buffer
-}
-
-function parseModel(buffer) {
-  return new Promise((resolve, reject) => {
-    new GLTFLoader().parse(buffer, '', resolve, reject)
-  })
-}
-
-async function buildDots(gltf, slice) {
-  await slice()
-  gltf.scene.updateMatrixWorld(true)
-  let sourceMesh = null
-  gltf.scene.traverse((o) => {
-    if (!sourceMesh && o.isMesh) sourceMesh = o
-  })
-  if (!sourceMesh) throw new Error('Model has no mesh')
-
-  const geometry = sourceMesh.geometry.clone()
-  geometry.applyMatrix4(sourceMesh.matrixWorld)
-  if (!geometry.attributes.normal) geometry.computeVertexNormals()
-  await slice()
-  const sampler = new MeshSurfaceSampler(new Mesh(geometry)).build()
-  await slice()
-
-  const N = CANDIDATES
-  const cp = new Float32Array(N * 3)
-  const cn = new Float32Array(N * 3)
-  const sp = new Vector3()
-  const sn = new Vector3()
-  for (let i = 0; i < N; i++) {
-    if ((i & 63) === 0) await slice()
-    sampler.sample(sp, sn)
-    cp[i * 3] = sp.x
-    cp[i * 3 + 1] = sp.y
-    cp[i * 3 + 2] = sp.z
-    cn[i * 3] = sn.x
-    cn[i * 3 + 1] = sn.y
-    cn[i * 3 + 2] = sn.z
-  }
-  geometry.dispose()
-  sourceMesh.geometry.dispose()
-
-  // Leaf candidates skip the voxel cap.
-  const isLeaf = new Uint8Array(N)
-  const leafIdx = []
-  let minX = Infinity, minY = Infinity, minZ = Infinity
-  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity
-  for (let i = 0; i < N; i++) {
-    if ((i & 511) === 0) await slice()
-    const x = cp[i * 3], y = cp[i * 3 + 1], z = cp[i * 3 + 2]
-    if (x < minX) minX = x
-    if (y < minY) minY = y
-    if (z < minZ) minZ = z
-    if (x > maxX) maxX = x
-    if (y > maxY) maxY = y
-    if (z > maxZ) maxZ = z
-    if (x > 0.13 && y > 0.6 && (x - 0.02) ** 2 + (z + 0.06) ** 2 > 0.035) {
-      isLeaf[i] = 1
-      leafIdx.push(i)
-    }
-  }
-  const leafKeep = Math.round(leafIdx.length * 0.6)
-
-  const FRAME_DOTS = 950 + 380 + 70 * 2 + 70 * 2
-  const LENS_DOTS = 1500
-  const needBust = TOTAL_DOTS - FRAME_DOTS - LENS_DOTS - leafKeep
-
-  // Even density: per-voxel cap.
-  const dx = Math.floor((maxX - minX) / VOXEL) + 1
-  const dy = Math.floor((maxY - minY) / VOXEL) + 1
-  const dz = Math.floor((maxZ - minZ) / VOXEL) + 1
-  const voxCount = new Int32Array(dx * dy * dz)
-  const voxOf = new Int32Array(N).fill(-1)
-  for (let i = 0; i < N; i++) {
-    if ((i & 511) === 0) await slice()
-    if (isLeaf[i]) continue
-    const ix = Math.floor((cp[i * 3] - minX) / VOXEL)
-    const iy = Math.floor((cp[i * 3 + 1] - minY) / VOXEL)
-    const iz = Math.floor((cp[i * 3 + 2] - minZ) / VOXEL)
-    const v = (ix * dy + iy) * dz + iz
-    voxOf[i] = v
-    voxCount[v]++
-  }
-  let maxCount = 0
-  for (let v = 0; v < voxCount.length; v++) {
-    if ((v & 32767) === 0) await slice()
-    if (voxCount[v] > maxCount) maxCount = voxCount[v]
-  }
-  const hist = new Int32Array(maxCount + 2)
-  for (let v = 0; v < voxCount.length; v++) {
-    if ((v & 32767) === 0) await slice()
-    hist[voxCount[v]]++
-  }
-  const target = 1.8 * needBust
-  let cap = maxCount
-  let sum = 0
-  let atLeast = 0
-  for (let c = maxCount; c >= 1; c--) atLeast += hist[c]
-  // atLeast now = voxels with count >= 1; walk caps upward.
-  {
-    let geq = atLeast
-    for (let c = 1; c <= maxCount; c++) {
-      sum += geq
-      if (sum >= target) {
-        cap = c
-        break
-      }
-      geq -= hist[c]
-    }
-  }
-  await slice()
-
-  const taken = new Int32Array(voxCount.length)
-  const pool = []
-  for (let i = 0; i < N; i++) {
-    if ((i & 511) === 0) await slice()
-    const v = voxOf[i]
-    if (v < 0) continue
-    if (taken[v] < cap) {
-      taken[v]++
-      pool.push(i)
-    }
-  }
-  for (let i = pool.length - 1; i > 0; i--) {
-    if ((i & 511) === 0) await slice()
-    const j = Math.floor(Math.random() * (i + 1))
-    const tmp = pool[i]
-    pool[i] = pool[j]
-    pool[j] = tmp
-  }
-
-  await slice()
-  // Visor: height map of the face.
-  const HX0 = -0.32, HX1 = 0.32, HY0 = 0.2, HY1 = 0.45, CELL = 0.01
-  const hw = Math.round((HX1 - HX0) / CELL)
-  const hh = Math.round((HY1 - HY0) / CELL)
-  const height = new Float32Array(hw * hh).fill(-Infinity)
-  for (let i = 0; i < N; i++) {
-    if ((i & 511) === 0) await slice()
-    if (cn[i * 3 + 2] < 0.2) continue
-    const x = cp[i * 3], y = cp[i * 3 + 1]
-    if (x < HX0 || x > HX1 || y < HY0 || y > HY1) continue
-    const cx = Math.min(hw - 1, Math.floor((x - HX0) / CELL))
-    const cy = Math.min(hh - 1, Math.floor((y - HY0) / CELL))
-    const k = cy * hw + cx
-    if (cp[i * 3 + 2] > height[k]) height[k] = cp[i * 3 + 2]
-  }
-  const faceHeight = (x, y) => {
-    const cx = Math.floor((x - HX0) / CELL)
-    const cy = Math.floor((y - HY0) / CELL)
-    let best = -Infinity
-    for (let j = -1; j <= 1; j++) {
-      for (let i = -1; i <= 1; i++) {
-        const gx = cx + i, gy = cy + j
-        if (gx < 0 || gy < 0 || gx >= hw || gy >= hh) continue
-        const h = height[gy * hw + gx]
-        if (h > best) best = h
-      }
-    }
-    return best
-  }
-
-  const W = 0.215
-  const CLEAR = 0.028
-  const topEdge = (x) => 0.378 - 0.022 * (x / W) ** 2
-  const lowEdge = (x) => 0.282 + 0.032 * Math.exp(-((x / 0.034) ** 2)) + 0.026 * (x / W) ** 4
-
-  let frontBase = -Infinity
-  for (let x = -0.06; x <= 0.0601; x += 0.01) {
-    for (let y = 0.3; y <= 0.3601; y += 0.01) frontBase = Math.max(frontBase, faceHeight(x, y))
-  }
-  const front = frontBase + CLEAR
-  let wrap = Infinity
-  for (let k = -Math.round(W / 0.01); k <= Math.round(W / 0.01); k++) {
-    const x = k * 0.01
-    if (Math.abs(x) < 0.05) continue
-    let need = -Infinity
-    const lo = lowEdge(x), hi = topEdge(x)
-    for (let y = lo; y <= hi; y += 0.005) need = Math.max(need, faceHeight(x, y))
-    if (!Number.isFinite(need)) continue
-    wrap = Math.min(wrap, (front - need - 0.7 * CLEAR) / (x * x))
-  }
-  if (!Number.isFinite(wrap) || wrap <= 0) wrap = 2.4
-  const lensZ = (x) => front - wrap * x * x
-
-  const total = TOTAL_DOTS
-  const pos = new Float32Array(total * 3)
-  const nor = new Float32Array(total * 3)
-  const rand = new Float32Array(total)
-  const part = new Float32Array(total)
-  let w = 0
-  let nonBustMinX = Infinity
-  let nonBustMaxX = -Infinity
-
-  const jit = () => (Math.random() - 0.5) * 0.004
-  const pushVisor = (x, y, z, kind) => {
-    const nx = 2 * wrap * x
-    const len = Math.hypot(nx, 1)
-    pos[w * 3] = x
-    pos[w * 3 + 1] = y
-    pos[w * 3 + 2] = z
-    nor[w * 3] = nx / len
-    nor[w * 3 + 1] = 0
-    nor[w * 3 + 2] = 1 / len
-    part[w] = kind
-    w++
-  }
-  for (let i = 0; i < 950; i++) {
-    const x = (Math.random() * 2 - 1) * W
-    const y = topEdge(x) - Math.random() ** 2 * 0.016
-    pushVisor(x + jit(), y + jit() * 0.5, lensZ(x) + 0.004 + jit(), 3)
-  }
-  for (let i = 0; i < 380; i++) {
-    const x = (Math.random() * 2 - 1) * W
-    pushVisor(x + jit(), lowEdge(x) + jit() * 0.5, lensZ(x) + 0.002 + jit(), 3)
-  }
-  for (const side of [-1, 1]) {
-    const x = side * W
-    const lo = lowEdge(x), hi = topEdge(x)
-    for (let i = 0; i < 70; i++) {
-      pushVisor(x + jit(), lo + Math.random() * (hi - lo), lensZ(x) + jit(), 3)
-    }
-  }
-  for (const side of [-1, 1]) {
-    const x0 = side * W
-    const y = topEdge(x0) - 0.008
-    for (let i = 0; i < 70; i++) {
-      const s = Math.random()
-      pushVisor(x0 + side * 0.03 * s + jit(), y + jit() * 0.5, lensZ(x0) - 0.15 * s + jit(), 3)
-    }
-  }
-  let lens = 0
-  while (lens < LENS_DOTS) {
-    const x = (Math.random() * 2 - 1) * W
-    const y = 0.26 + Math.random() * 0.14
-    if (y < lowEdge(x) || y > topEdge(x)) continue
-    pushVisor(x, y, lensZ(x) + jit(), 4)
-    lens++
-  }
-
-  const pushCandidate = (i, kind) => {
-    pos[w * 3] = cp[i * 3]
-    pos[w * 3 + 1] = cp[i * 3 + 1]
-    pos[w * 3 + 2] = cp[i * 3 + 2]
-    nor[w * 3] = cn[i * 3]
-    nor[w * 3 + 1] = cn[i * 3 + 1]
-    nor[w * 3 + 2] = cn[i * 3 + 2]
-    part[w] = kind
-    w++
-  }
-  for (let i = 0; i < leafKeep; i++) pushCandidate(leafIdx[i], 2)
-  for (let i = 0; i < needBust; i++) pushCandidate(pool[i % pool.length], 1)
-  if (w !== total) throw new Error(`Dot count mismatch: ${w}`)
-
-  // Depth values from neighbours among the first half of candidates.
-  const M = N >> 1
-  const gx = Math.floor((maxX - minX) / SHADE_R) + 1
-  const gy = Math.floor((maxY - minY) / SHADE_R) + 1
-  const gz = Math.floor((maxZ - minZ) / SHADE_R) + 1
-  const cellStart = new Int32Array(gx * gy * gz + 1)
-  const cellOf = new Int32Array(M)
-  for (let i = 0; i < M; i++) {
-    if ((i & 511) === 0) await slice()
-    const c =
-      (Math.floor((cp[i * 3] - minX) / SHADE_R) * gy + Math.floor((cp[i * 3 + 1] - minY) / SHADE_R)) * gz +
-      Math.floor((cp[i * 3 + 2] - minZ) / SHADE_R)
-    cellOf[i] = c
-    cellStart[c + 1]++
-  }
-  for (let c = 0; c < gx * gy * gz; c++) {
-    if ((c & 32767) === 0) await slice()
-    cellStart[c + 1] += cellStart[c]
-  }
-  const fill = cellStart.slice(0, -1)
-  const items = new Int32Array(M)
-  for (let i = 0; i < M; i++) {
-    if ((i & 8191) === 0) await slice()
-    items[fill[cellOf[i]]++] = i
-  }
-
-  const ridgeRaw = new Float32Array(total)
-  const counts = new Float32Array(total)
-  const R2 = SHADE_R * SHADE_R
-  for (let d = 0; d < total; d++) {
-    if ((d & 15) === 0) await slice()
-    const px = pos[d * 3], py = pos[d * 3 + 1], pz = pos[d * 3 + 2]
-    const cx = Math.floor((px - minX) / SHADE_R)
-    const cy = Math.floor((py - minY) / SHADE_R)
-    const cz = Math.floor((pz - minZ) / SHADE_R)
-    let count = 0, ox = 0, oy = 0, oz = 0
-    for (let ix = Math.max(0, cx - 1); ix <= Math.min(gx - 1, cx + 1); ix++) {
-      for (let iy = Math.max(0, cy - 1); iy <= Math.min(gy - 1, cy + 1); iy++) {
-        for (let iz = Math.max(0, cz - 1); iz <= Math.min(gz - 1, cz + 1); iz++) {
-          const c = (ix * gy + iy) * gz + iz
-          for (let k = cellStart[c]; k < cellStart[c + 1]; k++) {
-            const q = items[k] * 3
-            const ex = cp[q] - px, ey = cp[q + 1] - py, ez = cp[q + 2] - pz
-            if (ex * ex + ey * ey + ez * ez <= R2) {
-              count++
-              ox += ex
-              oy += ey
-              oz += ez
-            }
-          }
-        }
-      }
-    }
-    counts[d] = count
-    if (count > 0) {
-      const avg = (ox * nor[d * 3] + oy * nor[d * 3 + 1] + oz * nor[d * 3 + 2]) / count
-      ridgeRaw[d] = -avg / SHADE_R
-    }
-  }
-  await slice()
-  const absSorted = Float32Array.from(ridgeRaw, Math.abs).sort()
-  const p90 = absSorted[Math.floor(total * 0.9)] || 1
-  await slice()
-  const countSorted = counts.slice().sort()
-  const median = countSorted[total >> 1] || 1
-  await slice()
-  const shade = new Float32Array(total * 2)
-  for (let d = 0; d < total; d++) {
-    shade[d * 2] = Math.max(-1, Math.min(1, ridgeRaw[d] / p90))
-    shade[d * 2 + 1] = Math.max(0, Math.min(1, 1 - counts[d] / (0.55 * median)))
-  }
-
-  // Placement into world space.
-  for (let d = 0; d < total; d++) {
-    pos[d * 3] *= 2.8
-    pos[d * 3 + 1] = pos[d * 3 + 1] * 2.8 - 0.68
-    pos[d * 3 + 2] *= 2.8
-    rand[d] = Math.random()
-    if (part[d] >= 2) {
-      if (pos[d * 3] < nonBustMinX) nonBustMinX = pos[d * 3]
-      if (pos[d * 3] > nonBustMaxX) nonBustMaxX = pos[d * 3]
-    }
-  }
-
-  return { pos, nor, rand, part, shade, nonBustMinX, nonBustMaxX }
-}
-
 export function createBustScene({ container, url, reducedMotion, onProgress, onReady, onError }) {
   let disposed = false
   const abort = new AbortController()
@@ -589,13 +222,11 @@ export function createBustScene({ container, url, reducedMotion, onProgress, onR
   }
 
   const run = async () => {
-    const buffer = await downloadModel(url, abort.signal, (p) => {
-      if (!disposed) onProgress(p)
-    })
+    onProgress(0.1)
+    const img = await loadImage(url, abort.signal)
     if (disposed) return
-    const gltf = await parseModel(buffer)
-    await slice()
-    const data = await buildDots(gltf, slice)
+    onProgress(0.4)
+    const data = await buildPortraitDots(img, TOTAL_DOTS, slice)
     if (disposed) return
 
     renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
@@ -625,6 +256,7 @@ export function createBustScene({ container, url, reducedMotion, onProgress, onR
     bustGeo.setAttribute('aRand', new Float32BufferAttribute(data.rand, 1))
     bustGeo.setAttribute('aShade', new Float32BufferAttribute(data.shade, 2))
     bustGeo.setAttribute('aPart', new Float32BufferAttribute(data.part, 1))
+    bustGeo.setAttribute('aTone', new Float32BufferAttribute(data.tone, 1))
     const bustUniforms = {
       uTime: { value: 0 },
       uAssemble: { value: reducedMotion ? 1 : 0 },

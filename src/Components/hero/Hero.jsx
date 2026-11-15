@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const BUST_MODEL_URL =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261115_071021_742152ba-5554-4270-9dc5-286bcff36a1a.glb'
+const PORTRAIT_URL = '/images/Me.jpeg'
 
 const RING_DOTS = 96
 const RING = Array.from({ length: RING_DOTS }, (_, i) => {
@@ -28,7 +27,7 @@ const Hero = () => {
         if (disposed) return
         scene = createBustScene({
           container: stageRef.current,
-          url: BUST_MODEL_URL,
+          url: PORTRAIT_URL,
           reducedMotion,
           onProgress: setProgress,
           onReady: () => setPhase('ready'),

@@ -1,4 +1,4 @@
-import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion'
 import { useState } from 'react'
 
 const menuItems = [
@@ -11,7 +11,8 @@ const menuItems = [
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { scrollY } = useScroll()
+  const { scrollY, scrollYProgress } = useScroll()
+  const progressScale = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.4 })
 
   // The bar stays transparent over the hero and turns solid once the hero is behind it.
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -109,6 +110,12 @@ const Navbar = () => {
             </button>
           </div>
         </div>
+
+        <motion.div
+          aria-hidden="true"
+          className="absolute bottom-0 left-0 h-px w-full origin-left bg-tech"
+          style={{ scaleX: progressScale }}
+        />
 
         {/* Mobile Menu */}
         <motion.div

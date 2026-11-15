@@ -86,7 +86,7 @@ const Footer = () => {
                             Let&apos;s Connect
                         </h4>
                         <div className="flex justify-center md:justify-end gap-6 mb-6">
-                            <a
+                            <motion.a whileHover={{ y: -5, scale: 1.08 }} whileTap={{ scale: 0.94 }}
                                 href="https://wa.me/+919456266491"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -94,8 +94,8 @@ const Footer = () => {
                                 className={socialClass}
                             >
                                 <FaWhatsapp className="text-xl" />
-                            </a>
-                            <a
+                            </motion.a>
+                            <motion.a whileHover={{ y: -5, scale: 1.08 }} whileTap={{ scale: 0.94 }}
                                 href="https://www.linkedin.com/in/aditya-jain-3211a8257"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -103,14 +103,14 @@ const Footer = () => {
                                 className={socialClass}
                             >
                                 <FaLinkedin className="text-xl" />
-                            </a>
-                            <a
+                            </motion.a>
+                            <motion.a whileHover={{ y: -5, scale: 1.08 }} whileTap={{ scale: 0.94 }}
                                 href="mailto:jainaditya2309@gmail.com"
                                 aria-label="Email"
                                 className={socialClass}
                             >
                                 <FaEnvelope className="text-xl" />
-                            </a>
+                            </motion.a>
                         </div>
                         <p className="text-muted text-sm">
                             Open for opportunities and collaborations
@@ -132,8 +132,8 @@ const Footer = () => {
                     
                     <div className="flex items-center gap-2 text-muted text-sm">
                         <span>Made with</span>
-                        <FaHeart className="text-paper" />
-                        <span>and lots of ☕</span>
+                        <motion.span className="inline-flex" animate={{ scale: [1, 1.25, 1] }} transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}><FaHeart className="text-paper" /></motion.span>
+                        <span>and lots of Ã¢Ëœâ€¢</span>
                     </div>
                 </motion.div>
             </div>

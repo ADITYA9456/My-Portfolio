@@ -89,7 +89,7 @@ const skillJourney = [
 
 const linkClass = 'inline-flex w-full items-center justify-center gap-1.5 font-mono text-[10px] tracking-[0.04em] uppercase px-2 py-1.5 rounded-md border border-rule text-paper/80 transition-colors duration-300 hover:border-tech hover:text-paper'
 
-const Second = () => {
+const Skills = () => {
   return (
     <motion.section
       id="skills"
@@ -100,6 +100,7 @@ const Second = () => {
     >
       <div className="relative max-w-6xl mx-auto text-center space-y-3">
         <h2 className="text-3xl sm:text-5xl font-normal tracking-tight">Skills & Achievements</h2>
+        <motion.div className="mx-auto h-px w-32 bg-tech" initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }} />
         <p className="text-paper/70 max-w-3xl mx-auto text-sm sm:text-base">
           Mastering tech skills and earning certifications through dedicated learning and hands-on projects.
         </p>
@@ -114,10 +115,15 @@ const Second = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: index * 0.05 }}
             viewport={{ once: true }}
+            whileHover={{ y: -6, transition: { duration: 0.25, delay: 0 } }}
           >
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-rule text-2xl text-dots">
+            <motion.div
+              className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-rule text-2xl text-dots"
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
               <Icon />
-            </div>
+            </motion.div>
             <h3 className="text-lg font-medium min-h-[56px] flex items-center justify-center leading-tight">{title}</h3>
             {links ? (
               <div className="mt-auto pt-2 flex flex-col gap-2 w-full">
@@ -163,11 +169,16 @@ const Second = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: index * 0.06 }}
               viewport={{ once: true }}
+              whileHover={{ y: -4, transition: { duration: 0.25, delay: 0 } }}
             >
               <div className="flex items-center gap-2 mb-3 text-dots">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rule">
+                <motion.span
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-rule"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 3 + index * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                >
                   <Icon />
-                </span>
+                </motion.span>
               </div>
               <h4 className="text-lg font-medium mb-2">{title}</h4>
               <p className="text-sm text-paper/70 leading-relaxed">{description}</p>
@@ -179,4 +190,4 @@ const Second = () => {
   )
 }
 
-export default Second
+export default Skills

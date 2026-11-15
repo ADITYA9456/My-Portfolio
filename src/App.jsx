@@ -3,7 +3,7 @@ import About from './Components/About'
 import Footer from './Components/Footer'
 import Navbar from './Components/Navbar'
 import Project from './Components/Project'
-import Second from './Components/Second'
+import Skills from './Components/Skills'
 import Section from './Components/Section'
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
       <div className="mt-10 mb-10 mx-6 lg:mx-20"><hr className="h-px border-0 bg-rule" /></div>
       <Project/>
       <div className="mt-10 mb-10 mx-6 lg:mx-20"><hr className="h-px border-0 bg-rule" /></div>
-      <Second />
+      <Skills />
       <Footer />
     </MotionConfig>
   )
