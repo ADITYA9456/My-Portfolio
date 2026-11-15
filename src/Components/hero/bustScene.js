@@ -11,7 +11,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import { buildPortraitDots, loadImage } from './portraitDots.js'
+import { buildBustDots, loadModel } from './bustDots.js'
 
 const TOTAL_DOTS = 66000
 const FRAME_BUDGET_MS = 12
@@ -35,7 +35,6 @@ uniform float uRingRadius;
 attribute float aRand;
 attribute vec2 aShade;
 attribute float aPart;
-attribute float aTone;
 varying float vAlpha;
 varying float vBright;
 varying float vShine;
@@ -57,9 +56,9 @@ mat3 rotX(float a) {
 void main() {
   float r2 = fract(sin(aRand * 91.7) * 43758.5453);
 
-  float head = smoothstep(-0.95, -0.2, position.y);
+  float head = smoothstep(-1.3, -0.6, position.y);
   mat3 rot = rotY(uHead.x * (0.25 + 0.75 * head)) * rotX(uHead.y * head);
-  vec3 pivot = vec3(0.0, -0.6, 0.0);
+  vec3 pivot = vec3(0.0, -1.0, 0.0);
   vec3 home = rot * (position - pivot) + pivot;
   vec3 n = normalize(rot * normal);
 
@@ -94,7 +93,6 @@ void main() {
   b *= mix(1.0, 0.78, max(isFrame, isLens));
   b *= mix(1.0, 0.7, isLens);
   b *= 0.7 + r2 * 0.5;
-  b *= 0.15 + 1.25 * pow(aTone, 1.3);
 
   float special = max(isLeaf, max(isFrame, isLens));
   float glint = (1.0 - smoothstep(0.0, 0.09, abs(position.x - uGlint))) * special;
@@ -223,10 +221,10 @@ export function createBustScene({ container, url, reducedMotion, onProgress, onR
 
   const run = async () => {
     onProgress(0.1)
-    const img = await loadImage(url, abort.signal)
+    const gltf = await loadModel(url, abort.signal)
     if (disposed) return
     onProgress(0.4)
-    const data = await buildPortraitDots(img, TOTAL_DOTS, slice)
+    const data = await buildBustDots(gltf, TOTAL_DOTS, slice)
     if (disposed) return
 
     renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
@@ -256,7 +254,6 @@ export function createBustScene({ container, url, reducedMotion, onProgress, onR
     bustGeo.setAttribute('aRand', new Float32BufferAttribute(data.rand, 1))
     bustGeo.setAttribute('aShade', new Float32BufferAttribute(data.shade, 2))
     bustGeo.setAttribute('aPart', new Float32BufferAttribute(data.part, 1))
-    bustGeo.setAttribute('aTone', new Float32BufferAttribute(data.tone, 1))
     const bustUniforms = {
       uTime: { value: 0 },
       uAssemble: { value: reducedMotion ? 1 : 0 },
