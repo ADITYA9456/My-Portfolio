@@ -16,6 +16,9 @@ import { buildBustDots, loadModel } from './bustDots.js'
 const TOTAL_DOTS = 66000
 const FRAME_BUDGET_MS = 12
 const TAN15 = Math.tan(Math.PI / 12)
+const FIGURE_SHIFT = 0.3
+const HEAD_TOP = 1.75 // top of the dot bust in world units (see BUST_TOP in bustDots.js)
+const ASSEMBLE_SECONDS = 2
 const ABORT = Symbol('abort')
 
 const rawColor = (hex) => new Color(hex).convertLinearToSRGB()
@@ -145,11 +148,13 @@ attribute float aRand;
 varying float vBright;
 void main() {
   float head = fract(aT - uTime * uSpeed);
-  float comet = pow(head, 9.0);
-  vBright = (0.38 + comet * 1.6 + aRand * 0.15) * uOn;
+  float comet = pow(head, 7.0);
+  // A few points along each ribbon flare up like stars.
+  float spark = step(0.992, aRand);
+  vBright = (0.6 + comet * 2.6 + aRand * 0.25 + spark * 2.6) * uOn;
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   gl_Position = projectionMatrix * mv;
-  gl_PointSize = uSize * (0.4 + comet * 0.9 + aRand * 0.3) / -mv.z;
+  gl_PointSize = uSize * (0.5 + comet * 1.2 + aRand * 0.4 + spark * 2.4) / -mv.z;
 }
 `
 
@@ -188,6 +193,24 @@ void main() {
   gl_Position = projectionMatrix * mv;
   gl_PointSize = uSize * (0.5 + aRand) / -mv.z;
   vBright = (0.1 + aRand * 0.18) * uOn;
+}
+`
+
+// Fine spray that hangs around the shoulders and lazily wobbles in place.
+const SPRAY_VERT = /* glsl */ `
+uniform float uTime;
+uniform float uSize;
+uniform float uOn;
+attribute float aRand;
+varying float vBright;
+void main() {
+  vec3 p = position;
+  p.x += sin(uTime * 0.25 + aRand * 50.0) * 0.12;
+  p.y += cos(uTime * 0.2 + aRand * 37.0) * 0.1;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = uSize * (0.4 + aRand * 0.9) / -mv.z;
+  vBright = (0.3 + aRand * 0.7) * uOn;
 }
 `
 
@@ -247,7 +270,7 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
 
     renderer = new WebGLRenderer({ antialias: false, powerPreference: 'high-performance' })
     renderer.setPixelRatio(dpr)
-    renderer.setClearColor(0x0f110d, 1)
+    renderer.setClearColor(0x070808, 1)
     container.appendChild(renderer.domElement)
 
     onProgress(1)
@@ -264,7 +287,7 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
     const ringCenter = new Vector3(0, -0.15, 0)
     const head = new Vector2()
     const uHead = new Vector2()
-    const ink = rawColor('#c9d4b8')
+    const ink = rawColor('#e4eaf2')
 
     const bustGeo = new BufferGeometry()
     bustGeo.setAttribute('position', new Float32BufferAttribute(data.pos, 3))
@@ -283,8 +306,8 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
       uRingCenter: { value: ringCenter },
       uRingRadius: { value: 1 },
       uInk: { value: ink },
-      uBlue: { value: rawColor('#7fa8a3') },
-      uCream: { value: rawColor('#f0e5c8') },
+      uBlue: { value: rawColor('#a9c0dc') },
+      uCream: { value: rawColor('#ffffff') },
     }
     const blend = { transparent: true, depthWrite: false, depthTest: false, blending: AdditiveBlending }
     const bustMat = new ShaderMaterial({ uniforms: bustUniforms, vertexShader: BUST_VERT, fragmentShader: BUST_FRAG, ...blend })
@@ -320,16 +343,17 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
     const dustPoints = new Points(dustGeo, dustMat)
     dustPoints.frustumCulled = false
 
-    const makeRing = ({ cx, cy, cz, rx, ry, rotY, rotZ, from = 0, to = 1, count = 2200, speed = 0.05 }) => {
+    const ringOn = { value: reducedMotion ? 1 : 0 }
+    const makeRing = ({ cx, cy, cz, rx, ry, rotY, rotZ, from = 0, to = 1, count = 9000, speed = 0.05 }) => {
       const p = new Float32Array(count * 3)
       const tt = new Float32Array(count)
       const rr = new Float32Array(count)
       for (let i = 0; i < count; i++) {
         const u = i / count
         const a = (from + (to - from) * u) * Math.PI * 2
-        p[i * 3] = Math.cos(a) * rx + (Math.random() - 0.5) * 0.012
-        p[i * 3 + 1] = Math.sin(a) * ry + (Math.random() - 0.5) * 0.012
-        p[i * 3 + 2] = (Math.random() - 0.5) * 0.012
+        p[i * 3] = Math.cos(a) * rx + (Math.random() - 0.5) * 0.02
+        p[i * 3 + 1] = Math.sin(a) * ry + (Math.random() - 0.5) * 0.045
+        p[i * 3 + 2] = (Math.random() - 0.5) * 0.02
         tt[i] = u
         rr[i] = Math.random()
       }
@@ -340,8 +364,8 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
       const mat = new ShaderMaterial({
         uniforms: {
           uTime: bustUniforms.uTime,
-          uSize: { value: 20 * dpr },
-          uOn: dustUniforms.uOn,
+          uSize: { value: 15 * dpr },
+          uOn: ringOn,
           uSpeed: { value: speed },
           uInk: { value: ink },
         },
@@ -356,13 +380,38 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
       disposables.push(geo, mat)
       return pts
     }
-    const orbitA = makeRing({ cx: 0.35, cy: 0.45, cz: 0, rx: 3.3, ry: 0.85, rotY: 0.3, rotZ: 0.3, speed: 0.045 })
-    const orbitB = makeRing({ cx: 0.4, cy: -1.05, cz: 0, rx: 3.6, ry: 0.8, rotY: 0.25, rotZ: 0.2, speed: -0.06 })
-    const orbitC = makeRing({ cx: -0.4, cy: 0.9, cz: -1.2, rx: 3.5, ry: 3.5, rotY: 0, rotZ: 0, from: 0.5, to: 0.8, count: 900, speed: 0.02 })
+    const orbitA = makeRing({ cx: 0.3, cy: 0.5, cz: 0, rx: 3.0, ry: 0.62, rotY: 0.12, rotZ: 0.22, speed: 0.045 })
+    const orbitB = makeRing({ cx: 0.35, cy: -1.15, cz: 0, rx: 3.3, ry: 0.6, rotY: 0.12, rotZ: 0.17, speed: -0.06 })
+    const orbitC = makeRing({ cx: -0.4, cy: 0.9, cz: -1.2, rx: 3.5, ry: 3.5, rotY: 0, rotZ: 0, from: 0.5, to: 0.8, count: 1400, speed: 0.02 })
     const orbits = [orbitA, orbitB, orbitC]
 
-    scene.add(dustPoints, bust, lightPoint, ...orbits)
-    disposables.push(bustGeo, bustMat, lightGeo, lightMat, dustGeo, dustMat)
+    // Dust streaming off the shoulders, denser near the figure than the background field.
+    const SPRAY = 3200
+    const sprayPos = new Float32Array(SPRAY * 3)
+    const sprayRand = new Float32Array(SPRAY)
+    const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5
+    for (let i = 0; i < SPRAY; i++) {
+      const side = Math.random() < 0.5 ? -1 : 1
+      sprayPos[i * 3] = side * (1.5 + Math.abs(gauss()) * 1.5) + gauss() * 0.3
+      sprayPos[i * 3 + 1] = -1.2 + gauss() * 0.9 + (side < 0 ? -0.2 : 0.3)
+      sprayPos[i * 3 + 2] = gauss() * 0.8
+      sprayRand[i] = Math.random()
+    }
+    const sprayGeo = new BufferGeometry()
+    sprayGeo.setAttribute('position', new Float32BufferAttribute(sprayPos, 3))
+    sprayGeo.setAttribute('aRand', new Float32BufferAttribute(sprayRand, 1))
+    const sprayMat = new ShaderMaterial({
+      uniforms: { uTime: bustUniforms.uTime, uSize: { value: 18 * dpr }, uOn: dustUniforms.uOn, uInk: { value: ink } },
+      vertexShader: SPRAY_VERT,
+      fragmentShader: DUST_FRAG,
+      ...blend,
+    })
+    const sprayPoints = new Points(sprayGeo, sprayMat)
+    sprayPoints.frustumCulled = false
+    sprayPoints.position.x = -FIGURE_SHIFT
+
+    scene.add(dustPoints, sprayPoints, bust, lightPoint, ...orbits)
+    disposables.push(bustGeo, bustMat, lightGeo, lightMat, dustGeo, dustMat, sprayGeo, sprayMat)
 
     let width = 1
     let height = 1
@@ -371,10 +420,20 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
       height = Math.max(1, container.clientHeight)
       renderer.setSize(width, height, false)
       camera.aspect = width / height
-      const distance = Math.max(2.35 / TAN15, 1.7 / (TAN15 * camera.aspect))
-      const shift = camera.aspect > 1.25 ? 0.95 : 0
+      const portrait = camera.aspect < 1
+      // Portrait screens zoom in on the width and push the figure down so it clears the copy.
+      const distance = portrait
+        ? 1.9 / (TAN15 * camera.aspect)
+        : Math.max(2.35 / TAN15, 1.7 / (TAN15 * camera.aspect))
+      const visibleHeight = 2 * distance * TAN15
+      target.y = portrait ? HEAD_TOP - visibleHeight * (0.5 - Math.min(0.5, 360 / height + 0.04)) : -0.15
+      // On wide screens the figure sits slightly right of centre, so the camera pans by
+      // `shift` and the world origin moves with it. The assembly ring has to follow the
+      // camera target, otherwise it forms off-centre from the loader.
+      const shift = camera.aspect > 1.25 ? FIGURE_SHIFT : 0
       target.x = -shift
-      camera.position.set(-shift, -0.15, distance)
+      ringCenter.set(-shift, target.y, 0)
+      camera.position.set(-shift, target.y, distance)
       camera.lookAt(target)
       camera.updateProjectionMatrix()
       camera.updateMatrixWorld()
@@ -401,13 +460,17 @@ export function createBustScene({ container, url, cutFraction, hide, reducedMoti
     const update = (dt, now) => {
       if (!reducedMotion) t += dt
       bustUniforms.uTime.value = reducedMotion ? 0 : t
-      const assemble = reducedMotion ? 1 : Math.min(1, t / 2.6)
+      const assemble = reducedMotion ? 1 : Math.min(1, t / ASSEMBLE_SECONDS)
       bustUniforms.uAssemble.value = assemble
 
       if (!reducedMotion) {
         const lk = 1 - Math.exp(-dt * 4)
         lightUniforms.uOn.value += (Math.min(1, 1.6 * assemble) - lightUniforms.uOn.value) * lk
         dustUniforms.uOn.value += (1 - dustUniforms.uOn.value) * (1 - Math.exp(-dt * 0.8))
+        // Rings fade in and grow slightly once the figure is mostly formed.
+        ringOn.value += ((assemble > 0.45 ? 1 : 0) - ringOn.value) * (1 - Math.exp(-dt * 2))
+        const grow = 0.9 + 0.1 * ringOn.value * (2 - ringOn.value)
+        for (const o of orbits) o.scale.setScalar(grow)
 
         let shine = 99
         if (t >= 2.34 && t <= 4.54) {

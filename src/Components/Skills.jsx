@@ -96,7 +96,7 @@ const Skills = () => {
       className="scroll-mt-24 relative isolate px-4 sm:px-6 lg:px-20 py-14 text-paper"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 'some', margin: '0px 0px -10% 0px' }}
     >
       <div className="relative max-w-6xl mx-auto text-center space-y-3">
         <h2 className="text-3xl sm:text-5xl font-normal tracking-tight">Skills & Achievements</h2>

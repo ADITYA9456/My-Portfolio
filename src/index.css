@@ -41,6 +41,7 @@
     --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --nav-h: 64px;
+    --gutter: clamp(24px, 5vw, 96px);
 }
 
 *,
@@ -66,11 +67,12 @@ body {
 /* ---------- Hero ---------- */
 
 .hero {
+    --hero-ink: #e9edf2;
     position: relative;
     height: 100svh;
     overflow: hidden;
-    background: var(--color-night);
-    color: var(--color-paper);
+    background: #070808;
+    color: var(--hero-ink);
     cursor: crosshair;
 }
 
@@ -129,13 +131,13 @@ body {
 }
 
 .hero-ring circle {
-    fill: color-mix(in srgb, var(--color-paper) 18%, transparent);
+    fill: color-mix(in srgb, var(--hero-ink) 18%, transparent);
     r: 1.6px;
     transition: fill 0.25s, r 0.25s;
 }
 
 .hero-ring circle[data-on] {
-    fill: var(--color-paper);
+    fill: var(--hero-ink);
     r: 2.2px;
 }
 
@@ -169,18 +171,40 @@ body {
 }
 
 .hero-copy,
-.hero-quote,
 .hero-scroll,
 .hero-social {
     position: absolute;
     z-index: 2;
-    opacity: 0;
-    translate: 0 14px;
-    transition: opacity 1s var(--ease-out), translate 1s var(--ease-out);
 }
 
+/* Reveal: opacity and transform only. Children rise in one after another once the figure forms. */
+.hero-in,
+.hero-scroll,
+.hero-social {
+    opacity: 0;
+}
+
+@keyframes hero-rise {
+    from { opacity: 0; translate: 0 18px; }
+    to { opacity: 1; translate: 0 0; }
+}
+
+.hero[data-phase="ready"] .hero-in,
+.hero[data-phase="ready"] .hero-scroll,
+.hero[data-phase="ready"] .hero-social {
+    animation: hero-rise 0.9s var(--ease-out) both;
+}
+
+.hero[data-phase="ready"] .hero-hi { animation-delay: 0.1s; }
+.hero[data-phase="ready"] .hero-name { animation-delay: 0.25s; }
+.hero[data-phase="ready"] .hero-role { animation-delay: 0.45s; }
+.hero[data-phase="ready"] .hero-tagline { animation-delay: 0.6s; }
+.hero[data-phase="ready"] .hero-cta { animation-delay: 0.75s; }
+.hero[data-phase="ready"] .hero-scroll { animation-delay: 1s; }
+.hero[data-phase="ready"] .hero-social { animation-delay: 1.1s; }
+
 .hero-copy {
-    left: clamp(24px, 4.2vw, 72px);
+    left: var(--gutter);
     top: 50%;
     max-width: min(46vw, 620px);
     margin-top: -150px;
@@ -191,7 +215,7 @@ body {
     font-weight: 300;
     font-size: clamp(18px, 1.7vw, 28px);
     letter-spacing: 0.22em;
-    color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+    color: color-mix(in srgb, var(--hero-ink) 75%, transparent);
 }
 
 .hero-name {
@@ -204,7 +228,7 @@ body {
 }
 
 .hero-name span {
-    background: linear-gradient(90deg, #e9ece4 0%, #8a8f84 100%);
+    background: linear-gradient(90deg, #f4f6f9 0%, #8d939b 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -224,7 +248,7 @@ body {
     content: "";
     width: clamp(36px, 4vw, 72px);
     height: 1px;
-    background: color-mix(in srgb, var(--color-paper) 60%, transparent);
+    background: color-mix(in srgb, var(--hero-ink) 60%, transparent);
 }
 
 .hero-tagline {
@@ -233,7 +257,7 @@ body {
     font-size: clamp(14px, 1.15vw, 19px);
     line-height: 1.55;
     letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--color-paper) 60%, transparent);
+    color: color-mix(in srgb, var(--hero-ink) 60%, transparent);
 }
 
 .hero-cta {
@@ -242,47 +266,29 @@ body {
     gap: 14px;
     margin-top: 34px;
     padding: 15px 30px;
-    border: 1px solid color-mix(in srgb, var(--color-paper) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--hero-ink) 40%, transparent);
     border-radius: 999px;
     font-size: 14px;
-    color: var(--color-paper);
+    color: var(--hero-ink);
     text-decoration: none;
     transition: background-color 0.3s, border-color 0.3s, gap 0.3s;
 }
 
 .hero-cta:hover,
 .hero-cta:focus-visible {
-    background: color-mix(in srgb, var(--color-paper) 12%, transparent);
-    border-color: var(--color-paper);
+    background: color-mix(in srgb, var(--hero-ink) 12%, transparent);
+    border-color: var(--hero-ink);
     gap: 20px;
 }
 
-.hero-quote {
-    right: clamp(24px, 3.5vw, 64px);
-    top: 50%;
-    margin: -20px 0 0;
-    font-family: var(--font-serif);
-    font-size: clamp(20px, 1.9vw, 32px);
-    line-height: 1.3;
-    letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--color-paper) 65%, transparent);
-    transition-delay: 0.35s;
-}
-
-.hero-quote::before {
-    content: "\201C";
-    margin-right: 6px;
-    opacity: 0.6;
-}
-
 .hero-scroll {
-    left: clamp(24px, 4.2vw, 72px);
+    left: var(--gutter);
     bottom: 34px;
     display: flex;
     align-items: center;
     gap: 12px;
     padding-left: 14px;
-    border-left: 1px solid color-mix(in srgb, var(--color-paper) 30%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--hero-ink) 30%, transparent);
     background: none;
     border-top: 0;
     border-right: 0;
@@ -291,9 +297,8 @@ body {
     font: inherit;
     font-size: 13px;
     letter-spacing: 0.05em;
-    color: color-mix(in srgb, var(--color-paper) 70%, transparent);
+    color: color-mix(in srgb, var(--hero-ink) 70%, transparent);
     cursor: pointer;
-    transition-delay: 0.6s;
 }
 
 .hero-scroll i {
@@ -323,11 +328,10 @@ body {
 }
 
 .hero-social {
-    right: clamp(24px, 3.5vw, 64px);
+    right: var(--gutter);
     bottom: 30px;
     display: flex;
     align-items: center;
-    transition-delay: 0.7s;
 }
 
 .hero-social a {
@@ -335,12 +339,12 @@ body {
     place-items: center;
     width: 60px;
     height: 36px;
-    color: color-mix(in srgb, var(--color-paper) 75%, transparent);
+    color: color-mix(in srgb, var(--hero-ink) 75%, transparent);
     transition: color 0.3s, transform 0.3s;
 }
 
 .hero-social a + a {
-    border-left: 1px solid color-mix(in srgb, var(--color-paper) 18%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--hero-ink) 18%, transparent);
 }
 
 .hero-social a:hover,
@@ -349,13 +353,6 @@ body {
     transform: translateY(-3px);
 }
 
-.hero[data-phase="ready"] .hero-copy,
-.hero[data-phase="ready"] .hero-quote,
-.hero[data-phase="ready"] .hero-scroll,
-.hero[data-phase="ready"] .hero-social {
-    opacity: 1;
-    translate: 0 0;
-}
 
 .hero-rocks {
     position: absolute;
@@ -363,9 +360,20 @@ body {
     right: 0;
     bottom: -1px;
     width: 100%;
-    height: clamp(70px, 12vw, 190px);
+    height: clamp(110px, 18vw, 330px);
     pointer-events: none;
     z-index: 1;
+}
+
+/* Blends the black hero into the page colour under the figure. */
+.hero-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 22%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--color-night));
 }
 
 @media (max-width: 900px) {
@@ -375,7 +383,6 @@ body {
         max-width: calc(100% - 48px);
     }
 
-    .hero-quote,
     .hero-social {
         display: none;
     }
@@ -389,10 +396,62 @@ body {
 @media (prefers-reduced-motion: reduce) {
     .hero-loader,
     .hero-ring circle,
-    .hero-copy,
-    .hero-quote,
-    .hero-scroll,
-    .hero-social {
-        transition: none;
+    .hero[data-phase="ready"] .hero-in,
+    .hero[data-phase="ready"] .hero-scroll,
+    .hero[data-phase="ready"] .hero-social {
+        animation: none;
+        opacity: 1;
     }
+}
+
+/* ---------- Ambient background (sections below the hero) ---------- */
+
+.ambient {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ambient canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ambient-glow {
+    position: absolute;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    opacity: 0.1;
+    will-change: transform;
+}
+
+.ambient-glow-a {
+    top: -20vmax;
+    left: -15vmax;
+    background: radial-gradient(closest-side, var(--color-tech), transparent);
+    animation: ambient-drift-a 38s ease-in-out infinite alternate;
+}
+
+.ambient-glow-b {
+    bottom: -25vmax;
+    right: -20vmax;
+    background: radial-gradient(closest-side, var(--color-dots), transparent);
+    animation: ambient-drift-b 46s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift-a {
+    to { transform: translate3d(22vmax, 14vmax, 0) scale(1.15); }
+}
+
+@keyframes ambient-drift-b {
+    to { transform: translate3d(-24vmax, -12vmax, 0) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ambient-glow { animation: none; }
 }

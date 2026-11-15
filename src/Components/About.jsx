@@ -49,7 +49,7 @@ const About = () => {
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 'some', margin: '0px 0px -10% 0px' }}
     >
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -95,7 +95,7 @@ const About = () => {
 
               <motion.p className={paragraphClass} variants={paragraphVariants} whileHover={{ x: 6 }}>
                 As someone deeply committed to <span className={highlightClass}>continuous learning and problem-solving</span>, I thrive on tackling challenges and bringing creative ideas to life. 
-                Feel free to explore my work and reach outÃ¢â‚¬â€I&apos;d love to collaborate on exciting projects!
+                Feel free to explore my work and reach out—I&apos;d love to collaborate on exciting projects!
               </motion.p>
             </motion.div>
 

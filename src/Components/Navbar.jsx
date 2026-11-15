@@ -6,7 +6,7 @@ const menuItems = [
   { name: 'About', href: '#about' },
   { name: 'Projects', href: '#projects' },
   { name: 'Skills', href: '#skills' },
-  { name: 'Contact', href: '#footer' }
+  { name: 'Contact', href: '#contact' }
 ]
 
 const Navbar = () => {
@@ -30,7 +30,7 @@ const Navbar = () => {
         const el = document.getElementById(id)
         if (el && el.getBoundingClientRect().top <= line) current = id
       }
-      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = 'footer'
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = 'contact'
       setActive('#' + current)
     }
     onScroll()
@@ -77,7 +77,7 @@ const Navbar = () => {
             : 'bg-transparent border-transparent'
         }`}
       >
-        <div className="flex justify-between items-center h-16 px-6 lg:px-12">
+        <div className="flex justify-between items-center h-16" style={{ paddingInline: 'var(--gutter)' }}>
           {/* Logo */}
           <a
             href="#home"
@@ -171,7 +171,7 @@ const Navbar = () => {
         className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 md:hidden overflow-hidden"
       >
         <a
-          href="#footer"
+          href="#contact"
           className="block px-8 py-3 bg-surface text-ink rounded-full font-medium ring-1 ring-line"
           onClick={() => setIsMobileMenuOpen(false)}
         >

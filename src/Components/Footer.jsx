@@ -1,11 +1,9 @@
 import { motion } from 'framer-motion'
-import { FaEnvelope, FaHeart, FaLinkedin, FaRocket, FaWhatsapp } from "react-icons/fa"
+import { FaArrowUp, FaEnvelope, FaHeart, FaLinkedin, FaRocket, FaWhatsapp } from "react-icons/fa"
 
 const socialClass = "p-3 border border-rule rounded-xl text-paper/80 hover:border-tech hover:text-paper transition-colors duration-300"
 
 const Footer = () => {
-    const currentYear = new Date().getFullYear()
-
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -78,7 +76,6 @@ const Footer = () => {
 
                     {/* Connect Section */}
                     <motion.div 
-                        id="contact"
                         className="text-center md:text-right"
                         variants={itemVariants}
                     >
@@ -127,14 +124,17 @@ const Footer = () => {
                     variants={itemVariants}
                 >
                     <div className="flex items-center gap-2 text-muted text-sm">
-                        <span>&copy; {currentYear} Aditya Jain. All rights reserved.</span>
+                        <span>&copy; 2026 Aditya Jain</span>
                     </div>
                     
                     <div className="flex items-center gap-2 text-muted text-sm">
                         <span>Made with</span>
                         <motion.span className="inline-flex" animate={{ scale: [1, 1.25, 1] }} transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}><FaHeart className="text-paper" /></motion.span>
-                        <span>and lots of Ã¢Ëœâ€¢</span>
+                        <span>and lots of ☕</span>
                     </div>
+                    <a href="#home" className="inline-flex items-center gap-2 text-muted text-sm hover:text-paper transition-colors duration-300">
+                        <FaArrowUp /> Back to top
+                    </a>
                 </motion.div>
             </div>
         </motion.footer>
