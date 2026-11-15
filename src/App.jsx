@@ -1,3 +1,4 @@
+import { MotionConfig } from 'framer-motion'
 import About from './Components/About'
 import Footer from './Components/Footer'
 import Navbar from './Components/Navbar'
@@ -5,24 +6,19 @@ import Project from './Components/Project'
 import Second from './Components/Second'
 import Section from './Components/Section'
 
-
-
 function App() {
-
-
-
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <Navbar />
       <Section />
-      <div className="  h-0.5 bg-purple-500  mt-10 mb-10 ml-20 mr-20"><hr /></div>
+      <div className="mt-10 mb-10 mx-6 lg:mx-20"><hr className="h-px border-0 bg-rule" /></div>
       <About/>
-      <div className="  h-0.5 bg-purple-500  mt-10 mb-10 ml-20 mr-20"><hr /></div>
+      <div className="mt-10 mb-10 mx-6 lg:mx-20"><hr className="h-px border-0 bg-rule" /></div>
       <Project/>
-      <div className="  h-0.5 bg-purple-500  mt-10 mb-10 ml-20 mr-20"><hr /></div>
+      <div className="mt-10 mb-10 mx-6 lg:mx-20"><hr className="h-px border-0 bg-rule" /></div>
       <Second />
       <Footer />
-    </>
+    </MotionConfig>
   )
 }
 

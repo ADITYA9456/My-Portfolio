@@ -1,165 +1,70 @@
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useState } from 'react'
 
+const menuItems = [
+  { name: 'Home', href: '#home' },
+  { name: 'About', href: '#about' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Skills', href: '#skills' }
+]
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { scrollY } = useScroll()
 
+  // The bar stays transparent over the hero and turns solid once the hero is behind it.
   useMotionValueEvent(scrollY, "change", (latest) => {
-    setIsScrolled(latest > 50)
+    setIsScrolled(latest > window.innerHeight - 96)
   })
 
-  const navVariants = {
-    initial: { y: -100, opacity: 0 },
-    animate: { 
-      y: 0, 
-      opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" }
-    }
+  const fadeVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.6, ease: "easeOut" } }
   }
 
-  const logoVariants = {
-    initial: { scale: 0, rotate: -180, opacity: 0 },
-    animate: { 
-      scale: 1, 
-      rotate: 0,
-      opacity: 1,
-      transition: { 
-        type: "spring", 
-        stiffness: 100, 
-        damping: 10,
-        delay: 0.2
-      }
-    },
-    hover: { 
-      scale: 1.1,
-      rotate: [0, -10, 10, 0],
-      transition: { duration: 0.5 }
-    }
-  }
-
-  const menuItemVariants = {
-    initial: { y: -30, opacity: 0 },
+  const riseVariants = {
+    initial: { y: 12, opacity: 0 },
     animate: (i) => ({
       y: 0,
       opacity: 1,
-      transition: { 
-        delay: i * 0.15 + 0.3, 
-        type: "spring", 
-        stiffness: 100,
-        damping: 10
-      }
-    }),
-    hover: { 
-      scale: 1.1,
-      y: -5,
-      transition: { type: "spring", stiffness: 400, damping: 10 }
-    },
-    tap: { scale: 0.95 }
-  }
-
-  const underlineVariants = {
-    initial: { scaleX: 0, opacity: 0 },
-    hover: { 
-      scaleX: 1, 
-      opacity: 1,
-      transition: { duration: 0.3, ease: "easeInOut" }
-    }
+      transition: { delay: i * 0.08 + 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+    })
   }
 
   const mobileMenuVariants = {
     closed: {
       opacity: 0,
       height: 0,
-      transition: { 
-        duration: 0.4, 
-        ease: "easeInOut",
-        when: "afterChildren"
-      }
+      transition: { duration: 0.3, ease: "easeInOut" }
     },
     open: {
       opacity: 1,
       height: "auto",
-      transition: { 
-        duration: 0.4, 
-        ease: "easeInOut",
-        when: "beforeChildren",
-        staggerChildren: 0.1
-      }
+      transition: { duration: 0.3, ease: "easeInOut" }
     }
   }
-
-  const mobileItemVariants = {
-    closed: {
-      x: -50,
-      opacity: 0,
-      transition: { duration: 0.2 }
-    },
-    open: {
-      x: 0,
-      opacity: 1,
-      transition: { duration: 0.3, ease: "easeOut" }
-    }
-  }
-
-  const contactButtonVariants = {
-    initial: { scale: 0, y: 20, opacity: 0 },
-    animate: { 
-      scale: 1, 
-      y: 0,
-      opacity: 1,
-      transition: { 
-        delay: 0.8, 
-        type: "spring", 
-        stiffness: 150,
-        damping: 10
-      }
-    },
-    hover: { 
-      scale: 1.05,
-      y: -2,
-      boxShadow: "0 10px 25px rgba(139, 92, 246, 0.4)",
-      transition: { duration: 0.2 }
-    },
-    tap: { scale: 0.95 }
-  }
-
-  const hamburgerVariants = {
-    closed: { rotate: 0 },
-    open: { rotate: 180 }
-  }
-
-  const menuItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Skills', href: '#skills' }
-  ]
 
   return (
     <>
       <motion.nav
-        variants={navVariants}
+        variants={fadeVariants}
         initial="initial"
         animate="animate"
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-          isScrolled 
-            ? 'bg-blue-950/95 backdrop-blur-lg shadow-2xl border-b border-purple-500/30' 
-            : 'bg-blue-950/90 backdrop-blur-sm'
+        className={`fixed top-0 w-full z-50 transition-colors duration-500 border-b ${
+          isScrolled || isMobileMenuOpen
+            ? 'bg-night/95 border-rule'
+            : 'bg-transparent border-transparent'
         }`}
       >
         <div className="flex justify-between items-center h-16 px-6 lg:px-12">
           {/* Logo */}
-          <motion.div 
-            variants={logoVariants}
-            initial="initial"
-            animate="animate"
-            whileHover="hover"
-            className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-violet-400 bg-clip-text text-transparent cursor-pointer"
+          <a
+            href="#home"
+            className="font-serif text-[26px] leading-none text-paper opacity-90 hover:opacity-100 focus-visible:opacity-100 hover:underline focus-visible:underline underline-offset-4 transition-opacity duration-300"
           >
             Aditya&apos;s Portfolio
-          </motion.div>
+          </a>
 
           {/* Desktop Menu */}
           <div className="hidden md:block">
@@ -167,26 +72,17 @@ const Navbar = () => {
               {menuItems.map((item, index) => (
                 <motion.li
                   key={item.name}
-                  variants={menuItemVariants}
+                  variants={riseVariants}
                   initial="initial"
                   animate="animate"
-                  whileHover="hover"
-                  whileTap="tap"
                   custom={index}
-                  className="relative"
                 >
-                  <motion.a
+                  <a
                     href={item.href}
-                    className="px-4 py-2 text-white font-medium relative overflow-hidden cursor-pointer"
+                    className="px-2 py-2 text-sm text-paper/70 hover:text-paper transition-colors duration-300"
                   >
                     {item.name}
-                    <motion.div
-                      variants={underlineVariants}
-                      initial="initial"
-                      whileHover="hover"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500 origin-left"
-                    />
-                  </motion.a>
+                  </a>
                 </motion.li>
               ))}
             </ul>
@@ -194,120 +90,93 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
-            <motion.button
-              variants={hamburgerVariants}
-              animate={isMobileMenuOpen ? "open" : "closed"}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="flex flex-col justify-center items-center w-8 h-8 cursor-pointer relative z-10"
             >
-              <motion.span
-                animate={isMobileMenuOpen ? { rotate: 45, y: 2 } : { rotate: 0, y: -3 }}
-                className="w-6 h-0.5 bg-white block transition-all duration-300"
+              <span
+                className={`w-6 h-0.5 bg-paper block transition-transform duration-300 ${isMobileMenuOpen ? 'translate-y-[6px] rotate-45' : ''}`}
               />
-              <motion.span
-                animate={isMobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-                className="w-6 h-0.5 bg-white block mt-1 transition-all duration-300"
+              <span
+                className={`w-6 h-0.5 bg-paper block mt-1 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-0' : 'opacity-100'}`}
               />
-              <motion.span
-                animate={isMobileMenuOpen ? { rotate: -45, y: -2 } : { rotate: 0, y: 3 }}
-                className="w-6 h-0.5 bg-white block mt-1 transition-all duration-300"
+              <span
+                className={`w-6 h-0.5 bg-paper block mt-1 transition-transform duration-300 ${isMobileMenuOpen ? '-translate-y-[6px] -rotate-45' : ''}`}
               />
-            </motion.button>
+            </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         <motion.div
           variants={mobileMenuVariants}
+          initial="closed"
           animate={isMobileMenuOpen ? "open" : "closed"}
-          className="md:hidden overflow-hidden bg-blue-900/98 backdrop-blur-md border-t border-purple-500/20"
+          className="md:hidden overflow-hidden bg-night border-t border-rule"
         >
-          <motion.ul className="flex flex-col py-6">
+          <ul className="flex flex-col py-4">
             {menuItems.map((item) => (
-              <motion.li
-                key={item.name}
-                variants={mobileItemVariants}
-                whileHover={{ 
-                  x: 15, 
-                  backgroundColor: "rgba(139, 92, 246, 0.1)",
-                  scale: 1.02
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="rounded-lg mx-4 my-1"
-              >
+              <li key={item.name} className="mx-4 my-1">
                 <a
                   href={item.href}
-                  className="block px-6 py-4 text-white hover:text-purple-300 cursor-pointer transition-all duration-300 font-medium"
+                  className="block px-6 py-3 text-paper/80 hover:text-paper transition-colors duration-300"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </a>
-              </motion.li>
+              </li>
             ))}
-          </motion.ul>
+          </ul>
         </motion.div>
       </motion.nav>
 
       {/* Floating Contact Button */}
       <motion.div
-        variants={contactButtonVariants}
-        initial="initial"
-        animate="animate"
-        whileHover="hover"
-        whileTap="tap"
-        className="fixed bottom-8 right-8 z-50"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50"
       >
-        <motion.a
+        <a
           href="#footer"
-          className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-lg cursor-pointer group"
-          whileHover={{
-            rotate: [0, -10, 10, -5, 5, 0],
-            transition: { duration: 0.5 }
-          }}
+          className="group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-surface text-ink rounded-full ring-1 ring-line shadow-[0_10px_24px_-12px_#0006] transition-opacity duration-300 hover:opacity-90"
+          aria-label="Contact Me"
         >
-          <motion.svg
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
             className="w-6 h-6"
-            initial={{ rotate: 0 }}
-            whileHover={{ rotate: 15, scale: 1.1 }}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-          </motion.svg>
-          
+          </svg>
+
           {/* Tooltip */}
-          <motion.div
-            initial={{ opacity: 0, x: 20, scale: 0.8 }}
-            whileHover={{ opacity: 1, x: 0, scale: 1 }}
-            className="absolute right-20 bg-gray-800 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg"
-          >
+          <span className="pointer-events-none absolute right-20 hidden sm:block bg-surface text-ink font-mono text-xs tracking-wide px-3 py-2 rounded-md whitespace-nowrap ring-1 ring-line opacity-0 translate-x-2 transition duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
             Contact Me
-            <div className="absolute top-1/2 -right-1 w-2 h-2 bg-gray-800 rotate-45 transform -translate-y-1/2"></div>
-          </motion.div>
-        </motion.a>
+          </span>
+        </a>
       </motion.div>
 
       {/* Contact Button for Mobile Menu */}
       <motion.div
         variants={mobileMenuVariants}
+        initial="closed"
         animate={isMobileMenuOpen ? "open" : "closed"}
-        className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 md:hidden"
+        className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 md:hidden overflow-hidden"
       >
-        <motion.a
+        <a
           href="#footer"
-          variants={mobileItemVariants}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="block px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full font-medium cursor-pointer shadow-lg"
+          className="block px-8 py-3 bg-surface text-ink rounded-full font-medium ring-1 ring-line"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           Contact Me
-        </motion.a>
+        </a>
       </motion.div>
     </>
   )
