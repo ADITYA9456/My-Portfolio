@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { float, growLine, pop, rise as riseVariants, slideIn, stagger } from './motionPresets'
 
 const skills = [
   'HTML',
@@ -29,26 +30,13 @@ const skills = [
   'Razorpay'
 ]
 
+const containerVariants = stagger(0.1)
+const paragraphVariants = slideIn(-32)
+const chipsVariants = stagger(0.03)
+
 const About = () => {
   const handleScrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  }
-
-  const riseVariants = {
-    hidden: { y: 24, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-    }
   }
 
   const paragraphClass = "p-6 rounded-xl border border-rule bg-paper/5"
@@ -61,7 +49,7 @@ const About = () => {
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      viewport={{ once: true, amount: 'some', margin: '0px 0px -10% 0px' }}
     >
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -81,34 +69,34 @@ const About = () => {
                   Me
                 </span>
               </h1>
-              <div className="h-px w-24 bg-tech mx-auto lg:mx-0" />
+              <motion.div className="h-px w-24 bg-tech mx-auto lg:mx-0 origin-left" variants={growLine} />
             </motion.div>
 
             {/* Introduction Paragraph */}
             <motion.div 
               className="space-y-6 text-paper/70 text-lg leading-relaxed"
-              variants={riseVariants}
+              variants={stagger(0.12)}
             >
-              <p className={paragraphClass}>
+              <motion.p className={paragraphClass} variants={paragraphVariants} whileHover={{ x: 6 }}>
                 Hello! <span className={highlightClass}>Aditya Jain</span> here. A technology fanatic! 
                 Currently, I am enrolled in the Department of <span className={highlightClass}>Electronics and Communication Engineering</span> at 
                 Lakshmi Narain College of Technology, BHOPAL (M.P). My early education was completed from Young Scholars&apos; Academy Shikohabad (U.P).
-              </p>
+              </motion.p>
 
-              <p className={paragraphClass}>
+              <motion.p className={paragraphClass} variants={paragraphVariants} whileHover={{ x: 6 }}>
                 I am a passionate and driven developer with expertise in both <span className={highlightClass}>front-end and back-end technologies</span>. 
                 My journey in the world of technology has allowed me to gain proficiency in modern web development technologies and frameworks.
-              </p>
+              </motion.p>
 
-              <p className={paragraphClass}>
+              <motion.p className={paragraphClass} variants={paragraphVariants} whileHover={{ x: 6 }}>
                 I also have hands-on experience in database management using <span className={highlightClass}>MongoDB</span>, enabling me to create scalable and efficient web applications. 
                 Beyond software development, I specialize in <span className={highlightClass}>Embedded Systems and IoT</span>, showcasing my versatility in blending software with hardware.
-              </p>
+              </motion.p>
 
-              <p className={paragraphClass}>
+              <motion.p className={paragraphClass} variants={paragraphVariants} whileHover={{ x: 6 }}>
                 As someone deeply committed to <span className={highlightClass}>continuous learning and problem-solving</span>, I thrive on tackling challenges and bringing creative ideas to life. 
                 Feel free to explore my work and reach out—I&apos;d love to collaborate on exciting projects!
-              </p>
+              </motion.p>
             </motion.div>
 
             {/* Skills Section */}
@@ -119,16 +107,18 @@ const About = () => {
               <h3 className="text-2xl font-normal text-paper mb-6 text-center lg:text-left">
                 Technical Skills
               </h3>
-              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              <motion.div className="flex flex-wrap gap-3 justify-center lg:justify-start" variants={chipsVariants}>
                 {skills.map((skill) => (
-                  <span
+                  <motion.span
                     key={skill}
-                    className="px-4 py-2 border border-dots/30 text-dots rounded-full font-mono text-xs tracking-wide hover:border-dots hover:bg-dots/10 transition-colors duration-300"
+                    variants={pop}
+                    whileHover={{ y: -4, scale: 1.06 }}
+                    className="px-4 py-2 border border-dots/30 text-dots rounded-full font-mono text-xs tracking-wide hover:border-dots hover:bg-dots/10 transition-colors duration-300 cursor-default"
                   >
                     {skill}
-                  </span>
+                  </motion.span>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           </motion.div>
 
@@ -137,13 +127,27 @@ const About = () => {
             className="w-full lg:w-2/5 flex flex-col items-center lg:-mt-8"
             variants={riseVariants}
           >
-            <img 
-              className="w-80 h-80 lg:w-96 lg:h-96 object-cover object-top rounded-full border border-rule" 
-              src="images/Me.jpeg" 
-              alt="Aditya Jain - Web Developer"
-              loading="lazy"
-              decoding="async"
-            />
+            <motion.div className="relative" {...float(10, 6)}>
+              <motion.span
+                aria-hidden="true"
+                className="absolute -inset-3 rounded-full border border-dashed border-dots/40"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 40, ease: 'linear', repeat: Infinity }}
+              />
+              <motion.span
+                aria-hidden="true"
+                className="absolute -inset-6 rounded-full border border-tech/20"
+                animate={{ scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 4, ease: 'easeInOut', repeat: Infinity }}
+              />
+              <img 
+                className="relative w-80 h-80 lg:w-96 lg:h-96 object-cover object-top rounded-full border border-rule" 
+                src="images/Me.jpeg" 
+                alt="Aditya Jain - Web Developer"
+                loading="lazy"
+                decoding="async"
+              />
+            </motion.div>
 
             <div className="mt-6 text-center">
               <p className="font-mono text-xs uppercase tracking-[0.12em] text-muted mb-3">

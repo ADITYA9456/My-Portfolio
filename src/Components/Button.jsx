@@ -6,6 +6,7 @@ const Button = () => {
             {/* Resume Button */}
             <a
                 href="https://resume-tawny-six-40.vercel.app/"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-3 px-6 py-3 bg-surface text-ink rounded-xl font-medium ring-1 ring-line transition-opacity duration-300 hover:opacity-90"
             >

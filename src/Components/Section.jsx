@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { lazy, Suspense } from 'react'
 import Button from './Button'
+import { float, rise as riseVariants, stagger } from './motionPresets'
 import TypeScript from './TypeScript'
 
 const Hero = lazy(() => import('./hero/Hero.jsx'))
@@ -11,24 +12,9 @@ const stats = [
   { number: "Ready", label: "To Work" }
 ]
 
+const containerVariants = stagger(0.1)
+
 const Section = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  }
-
-  const riseVariants = {
-    hidden: { y: 24, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-    }
-  }
-
   return (
     <section id="home">
       <Suspense fallback={<div className="hero-fallback" />}>
@@ -74,20 +60,22 @@ const Section = () => {
             <div>
               <Button />
             </div>
-            <a
+            <motion.a
               href="#projects"
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
               className="inline-flex items-center justify-center px-6 py-3 border border-paper/30 text-paper hover:border-paper hover:bg-paper/10 transition-colors duration-300 rounded-xl font-medium"
             >
               View My Work
-            </a>
+            </motion.a>
           </motion.div>
 
           <motion.div className="flex justify-center lg:justify-start space-x-6" variants={riseVariants}>
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
+              <motion.div key={stat.label} className="text-center" whileHover={{ y: -4 }}>
                 <div className="text-2xl font-medium text-dots">{stat.number}</div>
                 <div className="font-mono text-xs uppercase tracking-[0.12em] text-muted">{stat.label}</div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </motion.div>
@@ -96,13 +84,15 @@ const Section = () => {
           className="rightSection w-full lg:w-1/2 flex justify-center lg:justify-end"
           variants={riseVariants}
         >
-          <img
-            className="w-80 h-96 lg:w-96 lg:h-112 object-cover rounded-lg border border-rule"
-            src="images/img3.png"
-            alt="Aditya - Web Developer"
-            loading="lazy"
-            decoding="async"
-          />
+          <motion.div {...float(12, 6)}>
+            <img
+              className="w-80 h-96 lg:w-96 lg:h-[28rem] object-cover rounded-lg border border-rule"
+              src="images/img3.png"
+              alt="Aditya - Web Developer"
+              loading="lazy"
+              decoding="async"
+            />
+          </motion.div>
         </motion.div>
 
         <button
@@ -114,7 +104,11 @@ const Section = () => {
           }}
         >
           <span className="w-6 h-10 border border-paper/40 rounded-full flex justify-center">
-            <span className="w-1 h-3 bg-dots rounded-full mt-2" />
+            <motion.span
+              className="w-1 h-3 bg-dots rounded-full mt-2"
+              animate={{ y: [0, 10, 0], opacity: [1, 0.2, 1] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+            />
           </span>
         </button>
       </motion.div>
